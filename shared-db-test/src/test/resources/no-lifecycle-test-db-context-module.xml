@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	                    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	                    
+	<!-- Import the common context definition -->
+	<!-- import resource="classpath:opentestsystem.shared.db-context-module.xml"/-->
+	<import resource="no-lifecycle-test-context-module.xml"/>
+
+	<!-- Load defaults from classpath -->
+	<context:property-placeholder
+		ignore-unresolvable="true"
+		order="1000"
+		location="classpath:opentestsystem.shared.test-db-default-properties.xml" />
+
+	<!-- Add properties to the appSettings bean. This is done as a side-effect 
+		of the creation of an anonymous bean -->
+	<bean factory-bean="appSettings" factory-method="updateProperties"
+		lazy-init="false">
+		<constructor-arg>
+			<util:map map-class="java.util.HashMap">
+				<entry key="jdbc.url" value="${jdbc.url}" />
+				<entry key="jdbc.userName" value="${jdbc.userName}" />
+				<entry key="jdbc.password" value="${jdbc.password}" />
+			</util:map>
+		</constructor-arg>
+	</bean>
+	
+	<!-- Wire a DataSource (since we probably aren't running in a webapp container) -->
+ 	<!--bean id="applicationDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close"> 
+ 		<property name="jdbcUrl"     value="${jdbc.url}"/> 
+ 		<property name="user"        value="${jdbc.userName}"/> 
+ 		<property name="password"    value="${jdbc.password}"/> 
+ 	</bean-->
+
+</beans>

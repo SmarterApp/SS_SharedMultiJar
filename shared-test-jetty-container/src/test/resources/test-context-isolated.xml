@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<!-- Test Context: defines objects that exist _outside_ the web container, but may be
+	     accessible from inside the web container (depending on setting of isUsingExternalSpringContext() ) -->
+	
+	<import resource="opentestsystem.shared.test-context-module.xml"/>
+	
+	<!-- An object that is shared between the web app and the outside world -->
+	<bean class="org.opentestsystem.shared.test.jetty.SharedObject"/>
+	
+	<bean name="test-context-noise"
+		class="org.opentestsystem.shared.test.jetty.NoiseMaker">
+		<property name="noise" value="In test-context.xml"/>
+	</bean>
+	
+	<!-- The Jetty web app container -->
+	<bean name="myApp"
+		class="org.opentestsystem.shared.test.jetty.JettyWebApplication">
+		<property name="indexUrl" value="http://127.0.0.1:8081/data"/>
+		<property name="contextPath" value="/"/>
+		<property name="descriptor" value="web.xml"/>
+		<property name="extractWar" value="false"/>
+		<property name="serverInstancePerTest" value="true"/>
+		<property name="usingExternalSpringContext" value="true"/>
+		<property name="classLoaderStrategy" value="JEE_CLASSLOADER_ISOLATION"/>
+		<property name="port" value="8082"/>
+		<property name="interface" value="127.0.0.1"/>
+	</bean>
+	
+	<!-- A user -->
+	<bean name="alice"
+		class="org.opentestsystem.shared.test.interactiveuser.InteractiveUserImpl"/>
+	
+</beans>

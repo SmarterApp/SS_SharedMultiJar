@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	                    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<import resource="test-context.xml"/>
+
+    <context:property-placeholder
+		location="test-default-properties-exported-assessment.xml"
+		order="800"
+		ignore-unresolvable="true"
+	/>
+	
+	<util:map id="dataReplacements" map-class="java.util.HashMap">
+				<entry key="itemsRootDir" value="C:/temp/" />
+	</util:map>
+	
+	<bean id="configsData" class="org.opentestsystem.unittest.db.DBDataDeployerImpl">
+		<property name="dataSource" ref="configsSchema"/>
+		<property name="dataDefinitionName" value="configs"/>
+		<!-- in opentestsystem-test-override-properties.xml located in your -->
+		<!-- home directory set ${configsDataFileName} to exportedAssessmentConfigsFromMSSQL.xml -->
+		<!-- if you want to import to Mysql data exported from MSSQL server -->
+		<property name="importFileName" value="${configsDataFileName}"/>
+        <property name="dataReplacementsMap" ref="dataReplacements" />
+	</bean>
+		<bean id="itembankData" class="org.opentestsystem.unittest.db.DBDataDeployerImpl">
+		<property name="dataSource" ref="itembankSchema"/>
+		<property name="dataDefinitionName" value="itembank"/>
+		<!-- in opentestsystem-test-override-properties.xml located in your -->
+		<!-- home directory set ${itembankDataFileName} to exportedAssessmentItembankFromMSSQL.xml -->
+		<!-- if you want to import to Mysql data exported from MSSQL server -->
+		<property name="importFileName" value="${itembankDataFileName}"/>
+		<property name="dataReplacementsMap" ref="dataReplacements" />
+	</bean>
+	
+	<util:properties id="scriptProperties">
+		<prop key="ItembankDBName">${ItembankDBName}</prop>
+		<prop key="ConfigsDBName">${TDSConfigsDBName}</prop>
+	</util:properties>
+	
+	<bean id="configsScripts" class="org.opentestsystem.unittest.db.DBScriptExecutor">
+		<property name="scriptProperties" ref="scriptProperties"/>
+		<property name="dataSource" ref="configsSchema" />
+		<property name="startupBeforeDependenciesScripts" value="" />
+		<property name="startupAfterDependenciesScripts" 
+			value="Triggers/triggers.sql,
+			       Functions/bigtoint.sql, StoredProcedures/_buildtable.sql" />
+		<property name="schemaDefinitionName" value="configs" />
+		<property name="dbDialect" value="${DBDialect}" />
+	</bean>
+	
+	<bean id="itembankScripts" class="org.opentestsystem.unittest.db.DBScriptExecutor">
+		<property name="scriptProperties" ref="scriptProperties"/>
+		<property name="dataSource" ref="itembankSchema" />
+		<property name="startupBeforeDependenciesScripts" value="" />
+		<property name="startupAfterDependenciesScripts" value="Triggers/triggers.sql" />
+		<property name="schemaDefinitionName" value="itembank" />
+		<property name="dbDialect" value="${DBDialect}" />
+	</bean>
+	
+</beans>

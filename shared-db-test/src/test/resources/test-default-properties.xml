@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<entry key="TDSSessionDBName">session2012</entry>
+	<entry key="ItembankDBName">itembank2012</entry>
+	<entry key="TDSArchiveDBName">archive</entry>
+	<entry key="TDSConfigsDBName">configs2012</entry>
+	<entry key="DBDialect">MYSQL</entry>
+	<entry key="AdditionalUrlParm">?useServerPrepStmts=false&amp;rewriteBatchedStatements=true</entry>
+	 
+	<entry key="jdbc.url">jdbc:mysql://127.0.0.1:3306</entry>
+	<entry key="jdbc.userName">root</entry>
+	<entry key="jdbc.password">root</entry>
+    <entry key="jdbc.driverclass">com.mysql.jdbc.Driver</entry>
+	
+	<entry key="configsDataFileName">entireXmlDataSet.xml</entry>
+	<entry key="itembankDataFileName">entireXmlDataSet.xml</entry>
+	<entry key="sessionDataFileName">entireXmlDataSet.xml</entry>
+	<entry key="archiveDataFileName"></entry>
+</properties>	
+	

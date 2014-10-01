@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	                    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<import resource="test-context.xml" />
+
+	<util:properties id="scriptProperties">
+		<prop key="ItembankDBName">${ItembankDBName}</prop>
+		<prop key="ArchiveDBName">${TDSArchiveDBName}</prop>
+		<prop key="ConfigsDBName">${TDSConfigsDBName}</prop>
+		<prop key="SessionDBName">${TDSSessionDBName}</prop>
+
+	</util:properties>
+
+	<bean id="configsData" class="org.opentestsystem.unittest.db.DBDataDeployerImpl">
+		<property name="dataSource" ref="configsSchema"/>
+		<property name="dataDefinitionName" value="configs"/>
+	</bean>
+	
+	<bean id="sessionData" class="org.opentestsystem.unittest.db.DBDataDeployerImpl">
+		<property name="dataSource" ref="sessionSchema"/>
+		<property name="dataDefinitionName" value="session"/>
+	</bean>
+	
+	<bean id="itembankData" class="org.opentestsystem.unittest.db.DBDataDeployerImpl">
+		<property name="dataSource" ref="itembankSchema"/>
+		<property name="dataDefinitionName" value="itembank"/>
+	</bean>
+	
+	<bean id="configsScripts" class="org.opentestsystem.unittest.db.DBScriptExecutor">
+		<property name="scriptProperties" ref="scriptProperties"/>
+		<property name="dataSource" ref="configsSchema" />
+		<property name="startupBeforeDependenciesScripts" value="" />
+		<property name="startupAfterDependenciesScripts" 
+			value="Triggers/triggers.sql,
+			       Functions/bigtoint.sql, StoredProcedures/_buildtable.sql" />
+		<property name="schemaDefinitionName" value="configs" />
+		<property name="dbDialect" value="${DBDialect}" />
+	</bean>
+	
+	<bean id="archiveScripts" class="org.opentestsystem.unittest.db.DBScriptExecutor">
+		<property name="scriptProperties" ref="scriptProperties"/>
+		<property name="dataSource" ref="archiveSchema" />
+		<property name="startupBeforeDependenciesScripts" value="" />
+		<property name="startupAfterDependenciesScripts" value="" />
+		<property name="schemaDefinitionName" value="archive" />
+		<property name="dbDialect" value="${DBDialect}" />
+	</bean>
+	
+	<bean id="itembankScripts" class="org.opentestsystem.unittest.db.DBScriptExecutor">
+		<property name="scriptProperties" ref="scriptProperties"/>
+		<property name="dataSource" ref="itembankSchema" />
+		<property name="startupBeforeDependenciesScripts" value="" />
+		<property name="startupAfterDependenciesScripts" value="Triggers/triggers.sql" />
+		<property name="schemaDefinitionName" value="itembank" />
+		<property name="dbDialect" value="${DBDialect}" />
+	</bean>
+	
+	<bean id="sessionScripts" class="org.opentestsystem.unittest.db.DBScriptExecutor"
+	        depends-on="configsSchema,archiveSchema,itembankSchema">
+		<property name="scriptProperties" ref="scriptProperties"/>
+		<property name="dataSource" ref="sessionSchema" />
+		<property name="startupBeforeDependenciesScripts" value="" />
+		<property name="startupAfterDependenciesScripts" 
+			value="Triggers/triggers.sql,
+			       Views/externs.sql, 
+				   Views/statuscodes.sql,
+				   Views/timelimits.sql,
+			       Views/itembank_tbladminstrand.sql,
+			       Views/itembank_tblsetofadminitems.sql,
+			       Views/itembank_tblsetofadminsubjects.sql,
+			       Views/itembank_testform.sql,
+			       Views/itembank_testformitem.sql,
+			       Views/tdsconfigs_client_externs.sql,
+			       Views/tdsconfigs_client_segmentproperties.sql,
+			       Views/tdsconfigs_client_systemflags.sql,
+			       Views/tdsconfigs_client_testformproperties.sql,
+			       Views/tdsconfigs_client_testmode.sql,
+			       Views/tdsconfigs_client_testproperties.sql,
+			       Views/tdsconfigs_client_testwindow.sql,
+			       Views/tdsconfigs_client_timelimits.sql,
+			       Views/tdsconfigs_geo_clientapplication.sql,
+			       Views/tdsconfigs_statuscodes.sql,
+			       StoredProcedures/_buildtable.sql, 
+				   StoredProcedures/_computesegmentpools.sql,
+				   StoredProcedures/_createresponseset.sql,
+				   StoredProcedures/ib_listtests.sql,
+		  	       Functions/scorebytds.sql,
+		  	       Functions/_aa_issegmentsatisfied.sql,
+		  	       Functions/_aa_itempoolstring.sql,
+		  	       Functions/_testopplastactivity.sql,
+		  	       Functions/bigtoint.sql,
+		  	       Functions/ft_iseligible.sql,
+		  	       Functions/getopportunitylanguage.sql,
+		  	       Functions/issimulation.sql,
+		  	       Functions/validatecompleteness.sql " />
+		<property name="schemaDefinitionName" value="session" />
+		<property name="dbDialect" value="${DBDialect}" />
+	</bean>
+	
+	<bean id="corestandardsSchema" class="org.opentestsystem.unittest.db.DBSchemaDeployerImpl">
+		<property name="masterDataSourceProperties" ref="masterDataSourceProperties"/>
+		<property name="schemaDefinitionName" value="corestandards"/>
+		<property name="dbDialect" value="${DBDialect}"/>
+		<property name="dbName" value="standardsrepository"/>
+		<property name="additionalUrlParm" value = "${AdditionalUrlParm}"  />
+	</bean>
+	<bean id="corestandardsScripts" class="org.opentestsystem.unittest.db.DBScriptExecutor">
+		<property name="scriptProperties" ref="scriptProperties"/>
+		<property name="dataSource" ref="corestandardsSchema" />
+		<property name="startupBeforeDependenciesScripts" value="" />
+		<property name="startupAfterDependenciesScripts" value="StoredProcedures/procs.sql" />
+		<property name="schemaDefinitionName" value="corestandards" />
+		<property name="dbDialect" value="${DBDialect}" />
+	</bean>
+	<bean id="permissionsSchema" class="org.opentestsystem.unittest.db.DBSchemaDeployerImpl">
+		<property name="masterDataSourceProperties" ref="masterDataSourceProperties"/>
+		<property name="schemaDefinitionName" value="permissions"/>
+		<property name="dbDialect" value="${DBDialect}"/>
+		<property name="dbName" value="permissionsdb"/>
+		<property name="additionalUrlParm" value = "${AdditionalUrlParm}"  />
+	</bean>
+	<bean id="permissionsScripts" class="org.opentestsystem.unittest.db.DBScriptExecutor">
+		<property name="scriptProperties" ref="scriptProperties"/>
+		<property name="dataSource" ref="permissionsSchema" />
+		<property name="startupBeforeDependenciesScripts" value="" />
+		<property name="startupAfterDependenciesScripts" value="" />
+		<property name="schemaDefinitionName" value="permissionsdb" />
+		<property name="dbDialect" value="${DBDialect}" />
+	</bean>
+</beans>
