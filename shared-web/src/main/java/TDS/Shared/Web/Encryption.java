@@ -159,7 +159,7 @@ public class Encryption implements IEncryption
    * @return encrypted string
    * @throws TDSEncryptionException
    */
-  private String encrypt (String stringToEncrypt) {
+  private synchronized  String encrypt (String stringToEncrypt) {
     try {
 
       byte[] plainBytes = stringToEncrypt.getBytes (CHARSET_NAME);
@@ -192,7 +192,7 @@ public class Encryption implements IEncryption
    * @return decrypted string
    * @throws TDSEncryptionException
    */
-  private String decrypt (String stringToDecrypt) {
+  private synchronized String decrypt (String stringToDecrypt) {
     try {
       
       if ( StringUtils.isEmpty (stringToDecrypt)) {
