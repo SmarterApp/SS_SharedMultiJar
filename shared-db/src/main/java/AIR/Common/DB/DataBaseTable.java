@@ -234,7 +234,7 @@ public class DataBaseTable
         sqlCommand.append (String.format (" %s %s(%d) ", entry.getKey (), dialectColumnType, type._columnSize));
     }
     //TODO Elena just test!
-    sqlCommand.append (");");
+    sqlCommand.append (") ENGINE = MEMORY;");
 
     try (Statement st = connection.createStatement ()) {
       st.executeUpdate (sqlCommand.toString ());

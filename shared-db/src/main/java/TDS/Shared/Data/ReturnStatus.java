@@ -97,6 +97,12 @@ public class ReturnStatus
     this._context = context;
   }
 
+  @Deprecated
+  public ReturnStatus()
+  {
+    //Do not use this directly. This is only required for serialization and deserialization.
+  }
+  
   public ReturnStatus (String status) {
     this._status = status;
   }

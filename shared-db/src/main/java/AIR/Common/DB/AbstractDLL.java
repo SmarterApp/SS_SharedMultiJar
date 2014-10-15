@@ -214,14 +214,14 @@ public abstract class AbstractDLL
       results = new MultiDataResultSet (st);
     } catch (SQLException ex) {
       _logger.error (String.format (messageTemplate, "SQLException",
-          queryTemplate, reformulatedQuery, ex.getMessage ()));
+          queryTemplate, reformulatedQuery, ex.getMessage ()),ex);
       throw new ReturnStatusException (ex);
       // TODO Shiva throw a ReturnStatusException here instead. Discuss
       // first.
     } catch (Exception ex) {
       _logger.error (String.format (messageTemplate, ex.getClass ()
           .getName (), queryTemplate, reformulatedQuery, ex
-          .getMessage ()));
+          .getMessage ()),ex);
       throw new ReturnStatusException (ex);
     } finally {
       try {
