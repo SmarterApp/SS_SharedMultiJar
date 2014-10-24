@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Educational Online Test Delivery System 
- * Copyright (c) 2014 American Institutes for Research
- *   
- * Distributed under the AIR Open Source License, Version 1.0 
- * See accompanying file AIR-License-1_0.txt or at
- * http://www.smarterapp.org/documents/American_Institutes_for_Research_Open_Source_Software_License.pdf
+ * Educational Online Test Delivery System Copyright (c) 2014 American
+ * Institutes for Research
+ * 
+ * Distributed under the AIR Open Source License, Version 1.0 See accompanying
+ * file AIR-License-1_0.txt or at http://www.smarterapp.org/documents/
+ * American_Institutes_for_Research_Open_Source_Software_License.pdf
  ******************************************************************************/
 /**
  * 
@@ -23,7 +23,7 @@ import AIR.Common.Utilities.UrlEncoderDecoderUtils;
 // TODO Shiva encryption decryption has not been accomplished yet.
 public class EncryptionHelper
 {
-  
+
   // / <summary>
   // / Encode bytes to BASE64
   // / </summary>
@@ -44,11 +44,11 @@ public class EncryptionHelper
   // / <param name="data"></param>
   // / <returns></returns>
   public static String EncryptToBase64 (String data) {
-    return UrlEncoderDecoderUtils.encode ( SpringApplicationContext.getBean ("iEncryption", IEncryption.class).scrambleText (data)); 
+    return EncodeToBase64 (SpringApplicationContext.getBean ("iEncryption", IEncryption.class).scrambleText (data));
   }
 
   public static String DecryptFromBase64 (String data) {
-    return  SpringApplicationContext.getBean ("iEncryption", IEncryption.class).unScrambleText (UrlEncoderDecoderUtils.decode(data));
+    return SpringApplicationContext.getBean ("iEncryption", IEncryption.class).unScrambleText (DecodeFromBase64 (data));
   }
 
 }

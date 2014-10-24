@@ -9,13 +9,21 @@
 	<parent>
 		<groupId>org.opentestsystem.shared</groupId>
 		<artifactId>shared-master</artifactId>
-		<version>1.0.1-BUILD-SNAPSHOT</version>
+		<version>1.0.1</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>shared-web</artifactId>
+		</dependency>
+		<dependency>
+          <groupId>org.springframework</groupId>
+         <artifactId>spring-webmvc</artifactId>
+       </dependency>
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
 		</dependency>
 	</dependencies>
 </project>

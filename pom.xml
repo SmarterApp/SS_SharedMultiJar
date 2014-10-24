@@ -5,7 +5,7 @@
 	<groupId>org.opentestsystem.shared</groupId>
 	<artifactId>shared-master</artifactId>
 	<name>Master POM for open test system shared modules</name>
-	<version>1.0.1-BUILD-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -23,13 +23,14 @@
 
 
 		<!--NOTE: this should be set to the non snapshot version i.e. if this pom's 
-			version is 1.0-SNAPSHOT, the property should be set to 1.0 -->
-		<shared-quality-config.version>0.0.4-SNAPSHOT</shared-quality-config.version>
+			version is 1.0, the property should be set to 1.0 -->
+		<shared-quality-config.version>0.0.4</shared-quality-config.version>
 
 		<!-- Spring -->
 		<spring.version>3.2.1.RELEASE</spring.version>
 		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
 		<spring-mock.version>2.0.8</spring-mock.version>
+		<spring-security-oauth.version>2.0.3.RELEASE</spring-security-oauth.version>
 		<mongo-java-driver.version>2.9.2</mongo-java-driver.version>
 		<spring-data-mongodb.version>1.2.0.RELEASE</spring-data-mongodb.version>
 		<!-- Maven Plugins -->
@@ -109,8 +110,8 @@
 		<woodstox.version>4.4.0</woodstox.version>
 
 		<!-- Default versions for TDS projects -->
-		<tds-shared.version>1.0.1-BUILD-SNAPSHOT</tds-shared.version>
-		<tds-dll.version>0.0.1-SNAPSHOT</tds-dll.version>
+		<tds-shared.version>1.0.1</tds-shared.version>
+		<tds-dll.version>0.0.1</tds-dll.version>
 
 	</properties>
 
@@ -411,6 +412,19 @@
 				</exclusions>
 			</dependency>
 
+		    <dependency>
+				<groupId>org.springframework.security.oauth</groupId>
+				<artifactId>spring-security-oauth2</artifactId>
+				<version>${spring-security-oauth.version}</version>
+				<exclusions>
+					<!-- Exclude Commons Logging in favor of SLF4j -->
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			
 			<!-- AspectJ -->
 			<dependency>
 				<groupId>org.aspectj</groupId>
