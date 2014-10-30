@@ -663,10 +663,13 @@ public class StaticFileHandler3
               String contentRange = String.format(CONTENT_RANGE_FORMAT, offset, offset + length - 1, fileLength);
               response.addHeader("Content-Range", contentRange);
               
-           // Specify content type. Use extension to do the mapping
+              // Specify content type. Use extension to do the mapping
               response.setContentType (MimeMapping.getMapping(physicalPath)); 
               // Static file handler supports byte ranges
               response.addHeader("Accept-Ranges", "bytes");
+              
+              //Required for Firefox 3.6 versions
+              response.setStatus(HttpStatus.PARTIAL_CONTENT.value()); //set the status to 206
               
               BufferedInputStream input = null;
               BufferedOutputStream output = null;
@@ -680,6 +683,9 @@ public class StaticFileHandler3
                   // Write file contents to response.
                   byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
                   int inputLength;
+                  
+                  input.skip(offset); //skip on requests for portions of bytes. Required for Firefox 3.6
+                  
                   while ((inputLength = input.read(buffer)) > 0) {
                       output.write(buffer, 0, inputLength);
                   }

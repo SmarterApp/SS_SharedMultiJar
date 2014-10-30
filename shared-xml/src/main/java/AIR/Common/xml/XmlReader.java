@@ -1,22 +1,25 @@
 /*******************************************************************************
- * Educational Online Test Delivery System 
- * Copyright (c) 2014 American Institutes for Research
- *   
- * Distributed under the AIR Open Source License, Version 1.0 
- * See accompanying file AIR-License-1_0.txt or at
- * http://www.smarterapp.org/documents/American_Institutes_for_Research_Open_Source_Software_License.pdf
+ * Educational Online Test Delivery System Copyright (c) 2014 American
+ * Institutes for Research
+ * 
+ * Distributed under the AIR Open Source License, Version 1.0 See accompanying
+ * file AIR-License-1_0.txt or at http://www.smarterapp.org/documents/
+ * American_Institutes_for_Research_Open_Source_Software_License.pdf
  ******************************************************************************/
 /**
 * 
  */
 package AIR.Common.xml;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
 import java.util.Stack;
@@ -44,32 +47,49 @@ public class XmlReader
 
   private Stack<MutablePair<Content, Integer>> _stack         = new Stack<MutablePair<Content, Integer>> ();
   @SuppressWarnings ("unused")
-  private Reader                               _file          = null;
+  private Closeable                            _file          = null;
   @SuppressWarnings ("unused")
   private Namespace                            _rootNameSpace = null;
 
-  // TODO shiva do i need to close this file?
   public XmlReader (InputStream file) throws IOException, JDOMException {
-    this (new InputStreamReader (file));
+    buildDocument (file);
   }
 
-  public XmlReader (Reader file) throws IOException, JDOMException
-  {
-    SAXBuilder builder = new SAXBuilder ();
-    _doc = builder.build (file);
-    _stack.push (new MutablePair<Content, Integer> (_doc.getRootElement (), -1));
-    _rootNameSpace = _doc.getRootElement ().getNamespace ();
-    _file = file;
+  public XmlReader (Reader file) throws IOException, JDOMException {
+    // Start hack! Shiva: I am not sure why this is happening. but this happened
+    // with the earlier .NET code as well.
+    // why am I seeing a special character if I directly pass a
+    // InputStreamReader to SAXBuilder. I had to do the same hack in
+    // ItemScoringHandler.ProcessRequest.
+    // I see this message as well
+    // "warning: line 6050: incompatible stripping characters and condition"
+    // Further information: Elena found two additional links:
+    // http://mark.koli.ch/resolving-orgxmlsaxsaxparseexception-content-is-not-allowed-in-prolog
+    // and
+    // http://stackoverflow.com/questions/5138696/org-xml-sax-saxparseexception-content-is-not-allowed-in-prolog
+    BufferedReader bfr = new BufferedReader (file);
+    StringBuilder strinBuilder = new StringBuilder ();
+    String line = "";
+    while ((line = bfr.readLine ()) != null)
+      strinBuilder.append (line);
+    file.close ();
+    String fileContent = strinBuilder.toString ();
+    int indexOfBegin = fileContent.indexOf ('<');
+    if (indexOfBegin > 0)
+      fileContent = fileContent.substring (indexOfBegin);
+    file = new StringReader (fileContent);
+    // End hack!
+    buildDocument (file);
   }
 
-  public static XmlReader create(URI uri) throws XmlReaderException{
+  public static XmlReader create (URI uri) throws XmlReaderException {
     try {
-      return new XmlReader (uri.toURL().openStream ());
+      return new XmlReader (uri.toURL ().openStream ());
     } catch (Exception exp) {
       throw new XmlReaderException (exp);
     }
   }
-  
+
   public static XmlReader create (String filepath) throws XmlReaderException {
     try {
       return new XmlReader (new FileInputStream (filepath));
@@ -190,23 +210,19 @@ public class XmlReader
     // the pointer shifts to an attribute.
   }
 
-  public void close ()
-  {
+  public void close () {
     try {
-      if (_file != null)
-      {
+      if (_file != null) {
         _file.close ();
         _file = null;
       }
-    } catch (IOException exp)
-    {
+    } catch (IOException exp) {
       _logger.error (exp.getMessage ());
     }
   }
 
   @Override
-  public void finalize ()
-  {
+  public void finalize () {
     close ();
   }
 
@@ -353,5 +369,16 @@ public class XmlReader
     }
 
     System.err.println ("");
+  }
+
+  private void buildDocument (Closeable file) throws JDOMException, IOException {
+    SAXBuilder builder = new SAXBuilder ();
+    if (file instanceof InputStream)
+      _doc = builder.build ((InputStream) file);
+    else if (file instanceof Reader)
+      _doc = builder.build ((Reader) file);
+    _stack.push (new MutablePair<Content, Integer> (_doc.getRootElement (), -1));
+    _rootNameSpace = _doc.getRootElement ().getNamespace ();
+    _file = file;
   }
 }
