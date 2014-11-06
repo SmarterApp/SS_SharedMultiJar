@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Educational Online Test Delivery System 
- * Copyright (c) 2014 American Institutes for Research
- *   
- * Distributed under the AIR Open Source License, Version 1.0 
- * See accompanying file AIR-License-1_0.txt or at
- * http://www.smarterapp.org/documents/American_Institutes_for_Research_Open_Source_Software_License.pdf
+ * Educational Online Test Delivery System Copyright (c) 2014 American
+ * Institutes for Research
+ * 
+ * Distributed under the AIR Open Source License, Version 1.0 See accompanying
+ * file AIR-License-1_0.txt or at http://www.smarterapp.org/documents/
+ * American_Institutes_for_Research_Open_Source_Software_License.pdf
  ******************************************************************************/
 /**
  * 
@@ -58,42 +58,42 @@ public abstract class HttpHandlerBase implements BeanFactoryAware
   @ExceptionHandler ({ ReturnStatusException.class })
   @ResponseBody
   public ReturnStatus handleReturnStatusException (ReturnStatusException rse, HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException {
-    //response.setStatus (HttpServletResponse.SC_OK);
-    //return exp.getReturnStatus ();
-	  
-  
-   response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-   response.setContentType("application/json");
-   ObjectMapper mapper = new ObjectMapper();
-   ResponseData<ReturnStatus> out = new ResponseData<ReturnStatus> (TDSReplyCode.ReturnStatus.getCode(), rse.getReturnStatus().getReason(), null);
-   mapper.writeValue(response.getOutputStream(), out);
-   return rse.getReturnStatus();    
+    // response.setStatus (HttpServletResponse.SC_OK);
+    // return exp.getReturnStatus ();
+    response.setStatus (HttpServletResponse.SC_FORBIDDEN);
+    response.setContentType ("application/json");
+    ObjectMapper mapper = new ObjectMapper ();
+    ResponseData<ReturnStatus> out = new ResponseData<ReturnStatus> (TDSReplyCode.ReturnStatus.getCode (), rse.getReturnStatus ().getReason (), null);
+    mapper.writeValue (response.getOutputStream (), out);
+    return rse.getReturnStatus ();
   }
 
-  public void setMIMEType(ContentType contentType)
-  {
-      WebHelper.setContentType(contentType);
-  }
-  
-  public static void writeString(String value) throws IOException
-  {
-      WebHelper.writeString(value);
+  public void setMIMEType (ContentType contentType) {
+    WebHelper.setContentType (contentType);
   }
 
-  public static void WriteString(String value,Object[] values) throws IOException
-  {
-      WebHelper.writeString(value, values);
+  public static void writeString (String value) throws IOException {
+    WebHelper.writeString (value);
   }
-  
-  //@ExceptionHandler ({ IOException.class })
-  //@ResponseBody
-  //public void handleReturnStatusException (IOException exp, HttpServletResponse response) throws ReturnStatusException {
-  //  response.setStatus (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-  //  throw new ReturnStatusException (exp);
-  //}
+
+  public static void WriteString (String value, Object[] values) throws IOException {
+    WebHelper.writeString (value, values);
+  }
+
+  // @ExceptionHandler ({ IOException.class })
+  // @ResponseBody
+  // public void handleReturnStatusException (IOException exp,
+  // HttpServletResponse response) throws ReturnStatusException {
+  // response.setStatus (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+  // throw new ReturnStatusException (exp);
+  // }
 
   protected HttpContext getCurrentContext () {
     return _currentContext;
+  }
+
+  protected String getRequestParameter (String name) {
+    return _currentContext.getRequest ().getParameter (name);
   }
 
   protected <T> T getBean (String name, Class<T> c) {
@@ -105,8 +105,8 @@ public abstract class HttpHandlerBase implements BeanFactoryAware
   protected HttpHandlerBase () {
 
   }
-  
-  protected void SetMIMEType(ContentType contentType) {
+
+  protected void SetMIMEType (ContentType contentType) {
     WebHelper.setContentType (contentType);
   }
 

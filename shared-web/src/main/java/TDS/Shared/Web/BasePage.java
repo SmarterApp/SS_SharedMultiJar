@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import AIR.Common.Utilities.SpringApplicationContext;
 import AIR.Common.Utilities.TDSStringUtils;
 import AIR.Common.Web.FacesContextHelper;
+import AIR.Common.Web.UrlHelper;
 import AIR.Common.Web.Session.HttpContext;
 import AIR.Common.Web.taglib.ClientScript;
 import AIR.Common.Web.taglib.ClientScriptContainerBean;
@@ -58,7 +59,17 @@ public class BasePage
   protected HttpServletRequest getRequest () {
     return httpContext.getRequest ();
   }
-
+  
+  public String getBaseUrl()
+  {
+    return UrlHelper.getBase ();
+  }
+  
+  protected String getRequestParameter(String name)
+  {
+    return getRequest ().getParameter (name);
+  }
+  
   protected HttpServletResponse getResponse () {
     return httpContext.getResponse ();
   }

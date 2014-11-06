@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Educational Online Test Delivery System 
- * Copyright (c) 2014 American Institutes for Research
- *   
- * Distributed under the AIR Open Source License, Version 1.0 
- * See accompanying file AIR-License-1_0.txt or at
- * http://www.smarterapp.org/documents/American_Institutes_for_Research_Open_Source_Software_License.pdf
+ * Educational Online Test Delivery System Copyright (c) 2014 American
+ * Institutes for Research
+ * 
+ * Distributed under the AIR Open Source License, Version 1.0 See accompanying
+ * file AIR-License-1_0.txt or at http://www.smarterapp.org/documents/
+ * American_Institutes_for_Research_Open_Source_Software_License.pdf
  ******************************************************************************/
 package AIR.Common.Web.Session;
 
@@ -25,11 +25,10 @@ public abstract class BaseServletContextListener implements ServletContextListen
   public void contextInitialized (ServletContextEvent sce) {
     // TODO Shiva we could have loaded configuration file here but we have done
     // it as a WebAppInitializer.
-    // TODO Shiva can we save the ServletContext as part of Server.
     ServletContext context = sce.getServletContext ();
     Server.setServletContext (context);
     Server.setContextPath (context.getContextPath ());
-    Server.setDocBasePath (context.getRealPath (Server.getContextPath ()));
+    Server.setDocBasePath (context.getRealPath (""));
   }
 
   public void contextDestroyed (ServletContextEvent sce) {

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Educational Online Test Delivery System 
- * Copyright (c) 2014 American Institutes for Research
- *   
- * Distributed under the AIR Open Source License, Version 1.0 
- * See accompanying file AIR-License-1_0.txt or at
- * http://www.smarterapp.org/documents/American_Institutes_for_Research_Open_Source_Software_License.pdf
+ * Educational Online Test Delivery System Copyright (c) 2014 American
+ * Institutes for Research
+ * 
+ * Distributed under the AIR Open Source License, Version 1.0 See accompanying
+ * file AIR-License-1_0.txt or at http://www.smarterapp.org/documents/
+ * American_Institutes_for_Research_Open_Source_Software_License.pdf
  ******************************************************************************/
 /**
  * 
@@ -28,14 +28,18 @@ import org.apache.commons.lang3.StringUtils;
 public class Path
 {
   public static String combine (String dir, String fileName) {
+    return combine (dir, fileName, File.separator);
+  }
+
+  public static String combine (String dir, String fileName, String separator) {
     if (StringUtils.isEmpty (dir))
       return fileName;
     else if (StringUtils.isEmpty (fileName))
       return dir;
-    if (dir.endsWith(File.separator)){
+    if (dir.endsWith (separator) || fileName.startsWith (separator)) {
       return String.format ("%s%s", dir, fileName);
     } else {
-      return String.format ("%s%s%s", dir, File.separator, fileName);
+      return String.format ("%s%s%s", dir, separator, fileName);
     }
   }
 
@@ -47,6 +51,12 @@ public class Path
     return FilenameUtils.getName (path);
   }
 
+  public static boolean isAbsolute(String path)
+  {
+    File f = new File(path);
+    return f.exists () && f.isAbsolute ();
+  }
+  
   public static boolean exists (String path) {
     return (new File (path)).exists ();
   }
@@ -60,7 +70,7 @@ public class Path
   {
     return FilenameUtils.getExtension (fileName);
   }
-  
+
   public static String getDirectoryName (String path) {
     if (StringUtils.endsWith (path, "/") || StringUtils.endsWith (path, "\\"))
       return path.substring (0, path.length () - 1);
@@ -69,7 +79,7 @@ public class Path
   }
 
   public static Collection<File> getFilesMatchingExtensions (String folder, final String[] extensions) {
-    return (Collection<File>) FileUtils.listFiles (new File ("C:/WorkSpace/TDSCore/AppsCurrent/ItemPreview/TDS.ItemPreview.Web/Content"), new IOFileFilter ()
+    return (Collection<File>) FileUtils.listFiles (new File (folder), new IOFileFilter ()
     {
       @Override
       public boolean accept (File arg0) {
@@ -94,18 +104,10 @@ public class Path
 
   public static void main (String[] arhs) {
     try {
-      System.err.println (getFileName ("c:/zy/abc"));
-      System.err.println (getFileName ("c:/zy/"));
-      System.err.println (getFileName ("c:/zy/abc.txt"));
-      System.err.println (getFileNameWithoutExtension ("c:/zy/abc"));
-      System.err.println (getFileNameWithoutExtension ("c:/zy/"));
-      System.err.println (getFileNameWithoutExtension ("c:/zy/abc.txt"));
-      URI uri = new URI ("file://c:/file/xyz");
-      System.err.println (uri.getScheme ());
-      System.err.println (uri.getPath ());
-      System.err.println (uri.getRawPath ());
-      System.err.println (uri.getFragment ());
-
+      String folder = "C:/WorkSpace/Student-Geo-SBACOSS/ItemPreview/TDS.ItemPreview.Web";
+      for (File file : Path.getFilesMatchingExtensions (folder, new String[] { ".xml" })) {
+        System.err.println (file.getAbsolutePath ());
+      }
     } catch (Throwable exp) {
       exp.printStackTrace ();
     }
