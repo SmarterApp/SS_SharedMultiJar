@@ -53,10 +53,15 @@ public abstract class FileHttpHandler extends HttpServlet
   @Override
   protected void service (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-    if(request.getMethod ().equalsIgnoreCase ("POST")){
-      throw new TDSHttpException (405, "Method_not_allowed -- POST -- ");
-    }
-      staticFileHandler(request,response);
+      if(request.getMethod ().equalsIgnoreCase ("POST")){
+        throw new TDSHttpException (405, "Method_not_allowed -- POST -- ");
+      }
+      try {
+          staticFileHandler(request,response);
+      } catch (Exception e) {
+        _logger.error (e.getMessage (),e); 
+        throw e;
+      }
   }
 
  
@@ -70,6 +75,7 @@ public abstract class FileHttpHandler extends HttpServlet
   //This Method moved from FileHttpHandler to hear as there is no way to call child class method from the parent
   public void staticFileHandler(HttpServletRequest request, HttpServletResponse response) throws TDSHttpException, IOException
   {
+      long startTime = System.currentTimeMillis ();
       String physicalPath = overrideExecuteUrlPath(request);
       FileFtpHandler fileFtpHandler = SpringApplicationContext.getBean ("fileFtpHandler", FileFtpHandler.class);
       if (fileFtpHandler.allowScheme(physicalPath))
@@ -92,6 +98,7 @@ public abstract class FileHttpHandler extends HttpServlet
           if (_supportRanges) StaticFileHandler3.ProcessRequestInternal(request, response, physicalPath);
           else StaticFileHandler2.ProcessRequestInternal(request, response, physicalPath);
       }
+      _logger.info ("<<<<<<<<< staticFileHandler Total Execution Time : "+((System.currentTimeMillis ()-startTime)) + " ms. physicalPath: "+physicalPath+" ThreadId: " +Thread.currentThread ().getId ());
   }
   public abstract String overrideExecuteUrlPath(HttpServletRequest request) throws TDSHttpException;
   

@@ -93,15 +93,13 @@ public class TDSIdentity
   public static TDSIdentity getCurrentTDSIdentity () {
 
     TDSIdentity identity = HttpContext.getCurrentContext ().getIdentity ();
-    _logger.info("loadTest: TDSIdentity.getCurrentTDSIdentity identity " + identity);
     if (identity == null) {
-      _logger.info("loadTest: TDSIdentity.getCurrentTDSIdentity FormsAuthentication.getAuthCookieName :  " + FormsAuthentication.getAuthCookieName ());
       // First get the auth cookie.
       MultiValueCookie cookie = HttpContext.getCurrentContext ().getCookies ().findCookie (FormsAuthentication.getAuthCookieName ());
       if (cookie != null && !StringUtils.isEmpty (cookie.getValue ())) {
 
         String decryptedCookieValue = FormsAuthentication.decrypt (cookie.getValue ());
-        _logger.info("loadTest: TDSIdentity.getCurrentTDSIdentity decryptedCookieValue :  " + decryptedCookieValue);
+
         // replace the value in the underlying single value cookie and use that
         // to
         // create a new multi value cookie.

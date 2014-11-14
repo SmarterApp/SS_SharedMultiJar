@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Educational Online Test Delivery System 
- * Copyright (c) 2014 American Institutes for Research
- *   
- * Distributed under the AIR Open Source License, Version 1.0 
- * See accompanying file AIR-License-1_0.txt or at
- * http://www.smarterapp.org/documents/American_Institutes_for_Research_Open_Source_Software_License.pdf
+ * Educational Online Test Delivery System Copyright (c) 2014 American
+ * Institutes for Research
+ * 
+ * Distributed under the AIR Open Source License, Version 1.0 See accompanying
+ * file AIR-License-1_0.txt or at http://www.smarterapp.org/documents/
+ * American_Institutes_for_Research_Open_Source_Software_License.pdf
  ******************************************************************************/
 package AIR.Common.Configuration;
 
@@ -14,13 +14,13 @@ import AIR.Common.Utilities.SpringApplicationContext;
 
 public class AppSettingsHelper
 {
-  
+
   private static ConfigurationSection _appSettings;
-  
+
   static {
-    _appSettings =  SpringApplicationContext.getBean ("configurationManager", ConfigurationManager.class).getAppSettings ();
+    _appSettings = SpringApplicationContext.getBean ("configurationManager", ConfigurationManager.class).getAppSettings ();
   }
-  
+
   // / <summary>
   // / Check if app setting exists.
   // / </summary>
@@ -35,10 +35,10 @@ public class AppSettingsHelper
   }
 
   public static String get (String key, String defaultValue) {
-     String value = _appSettings.get(key);
-     if (value == null && defaultValue != null) {
-       return defaultValue;
-     }
+    String value = _appSettings.get (key);
+    if (value == null && defaultValue != null) {
+      return defaultValue;
+    }
     return value;
   }
 
@@ -91,17 +91,14 @@ public class AppSettingsHelper
 
   private static boolean getBoolean (String key, Boolean defaultValue) {
     String rawValue = get (key);
-    if (!StringUtils.isEmpty (rawValue))
-      ;
-    {
+    if (!StringUtils.isEmpty (rawValue)) {
       boolean value = Boolean.parseBoolean (rawValue);
       return value;
     }
-    // TODO Check this again.
-    /*
-     * return defaultValue != null ? defaultValue.booleanValue() : false;
-     */
-    // hack! it was giving compilation issues above. need to fix that instead.
+    if (defaultValue != null)
+      return defaultValue.booleanValue ();
+    else
+      return false;
   }
 
   public static double getDouble (String key) {
