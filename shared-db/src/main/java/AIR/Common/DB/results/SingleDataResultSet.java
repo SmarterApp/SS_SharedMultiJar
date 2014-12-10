@@ -98,7 +98,10 @@ public class SingleDataResultSet
       _rows.add (new DbResultRecord (this, result));
     }
     
-    if (!_returnStatusCheck && hasColumn ("status") && hasColumn("reason") && _rows.size() > 0 && "failed".equalsIgnoreCase((_rows.get(0)).<String> get ("status")))
+    if (!_returnStatusCheck && hasColumn ("status") && hasColumn("reason") && _rows.size() > 0 && 
+        ("failed".equalsIgnoreCase((_rows.get(0)).<String> get ("status")) ||
+         "denied".equalsIgnoreCase((_rows.get(0)).<String> get ("status"))    )
+        )
         _returnStatusCheck = true;
   }
   
