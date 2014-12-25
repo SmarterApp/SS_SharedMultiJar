@@ -37,6 +37,7 @@ public enum SQL_TYPE_To_JAVA_TYPE implements ReaderMethod<Object> {
   VARBINARY("varbinary", UUID.class, new VarBinaryUniqueIdentifierReader ()),
   DATE("date", Date.class, new DatetimeReader ()),
   CHAR("char", String.class, new StringReaderMethod ()),
+  TEXT("text", String.class, new StringReaderMethod ()),
   DOUBLE("double", Double.class, new FloatReaderMethod());
   
   String          _sqlType      = null;

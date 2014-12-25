@@ -65,6 +65,7 @@ class MySqlServerType implements SqlDialectTypeMap
     _map.put (SQL_TYPE_To_JAVA_TYPE.VARCHAR, "varchar");
     _map.put (SQL_TYPE_To_JAVA_TYPE.TIMESTAMP, "timestamp(3)");
     _map.put (SQL_TYPE_To_JAVA_TYPE.FLOAT, "float");
+    _map.put (SQL_TYPE_To_JAVA_TYPE.TEXT, "text");
   }
 }
 

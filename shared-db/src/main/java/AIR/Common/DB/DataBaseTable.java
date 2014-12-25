@@ -145,15 +145,18 @@ public class DataBaseTable
     }
   }
 
-  protected void createTable (SQLConnection connection) throws ReturnStatusException {
+  protected void createTable (SQLConnection connection, boolean inMemory) throws ReturnStatusException {
     if (_alreadyCreated)
       throw new ReturnStatusException (String.format ("Table %s has already been created.", _tableName));
 
     try {
+      // We only care about in-memory/on-disk temp tables
+      // for Mysql version of DLLs,
+      // so just leave Sql Server api as is.
       if (_dbType == DATABASE_TYPE.SQLSERVER) {
         createSqlServerTable (connection);
       } else if (_dbType == DATABASE_TYPE.MYSQL) {
-        createMySqlTable (connection);
+        createMySqlTable (connection, inMemory);
       }
     } catch (SQLException exp) {
       throw new ReturnStatusException (exp);
@@ -205,7 +208,7 @@ public class DataBaseTable
     }
   }
 
-  private void createMySqlTable (SQLConnection connection) throws SQLException {
+  private void createMySqlTable (SQLConnection connection, boolean inMemory) throws SQLException {
     // throw new InvalidDataBaseTypeSpecification
     // ("MySql is not supported yet");
 
@@ -233,8 +236,10 @@ public class DataBaseTable
       else
         sqlCommand.append (String.format (" %s %s(%d) ", entry.getKey (), dialectColumnType, type._columnSize));
     }
-    //TODO Elena just test!
-    sqlCommand.append (") ENGINE = MEMORY;");
+    if (inMemory)
+      sqlCommand.append (") ENGINE = MEMORY;");
+    else
+      sqlCommand.append (");");     
 
     try (Statement st = connection.createStatement ()) {
       st.executeUpdate (sqlCommand.toString ());

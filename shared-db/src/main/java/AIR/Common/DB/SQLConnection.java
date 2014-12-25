@@ -41,10 +41,18 @@ public class SQLConnection implements Connection
     this.mConnection = conn;
   }
 
+  // If using TEXT column type on temporary MySql table, use this API
+  public void createTemporaryDiskTable (DataBaseTable table) throws ReturnStatusException {
+    if (containsTemporaryTable (table.getTableName ()) != null)
+      throw new ReturnStatusException (String.format ("Temporary table with name %s already exists.", table.getTableName ()));
+   table.createTable (this, false);
+   _existingTemporaryTables.add (table);
+  }
+  
   public void createTemporaryTable (DataBaseTable table) throws ReturnStatusException {
     if (containsTemporaryTable (table.getTableName ()) != null)
       throw new ReturnStatusException (String.format ("Temporary table with name %s already exists.", table.getTableName ()));
-    table.createTable (this);
+    table.createTable (this, true);
     _existingTemporaryTables.add (table);
   }
 
