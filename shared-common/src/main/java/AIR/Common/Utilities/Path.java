@@ -32,6 +32,10 @@ public class Path
   }
 
   public static String combine (String dir, String fileName, String separator) {
+    // TODO: needs review
+    dir = dir.replace ("/", separator);
+    dir = dir.replace ("\\", separator);
+    // End
     if (StringUtils.isEmpty (dir))
       return fileName;
     else if (StringUtils.isEmpty (fileName))
@@ -51,12 +55,12 @@ public class Path
     return FilenameUtils.getName (path);
   }
 
-  public static boolean isAbsolute(String path)
+  public static boolean isAbsolute (String path)
   {
-    File f = new File(path);
+    File f = new File (path);
     return f.exists () && f.isAbsolute ();
   }
-  
+
   public static boolean exists (String path) {
     return (new File (path)).exists ();
   }
