@@ -12,7 +12,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * @author jmambo
@@ -21,7 +20,7 @@ import org.springframework.web.client.RestTemplate;
 public class TdsRestClient implements ITdsRestClient
 {
 
-  private RestOperations _restOperation = new RestTemplate ();
+  private RestOperations _restOperation;
 
   private String _baseUri;
   
