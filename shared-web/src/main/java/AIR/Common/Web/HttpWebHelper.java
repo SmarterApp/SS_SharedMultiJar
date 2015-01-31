@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Educational Online Test Delivery System 
- * Copyright (c) 2014 American Institutes for Research
- *   
- * Distributed under the AIR Open Source License, Version 1.0 
- * See accompanying file AIR-License-1_0.txt or at
- * http://www.smarterapp.org/documents/American_Institutes_for_Research_Open_Source_Software_License.pdf
+ * Educational Online Test Delivery System Copyright (c) 2014 American
+ * Institutes for Research
+ * 
+ * Distributed under the AIR Open Source License, Version 1.0 See accompanying
+ * file AIR-License-1_0.txt or at http://www.smarterapp.org/documents/
+ * American_Institutes_for_Research_Open_Source_Software_License.pdf
  ******************************************************************************/
 package AIR.Common.Web;
 
@@ -13,8 +13,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 
 import javax.annotation.PreDestroy;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -29,12 +31,14 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import AIR.Common.Helpers._Ref;
 import AIR.Common.xml.IXmlSerializable;
 import AIR.Common.xml.TdsXmlOutputFactory;
 
@@ -52,12 +56,9 @@ public class HttpWebHelper
                                                    }
                                                  };
 
-  public HttpWebHelper ()
-  {
+  public HttpWebHelper () {
     PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager ();
-    _client = HttpClientBuilder.create ()
-        .setConnectionManager (connectionManager)
-        .build ();
+    _client = HttpClientBuilder.create ().setConnectionManager (connectionManager).build ();
   }
 
   @PreDestroy
@@ -65,12 +66,12 @@ public class HttpWebHelper
     // We hope that, by making the variable inaccessible, we are doing enough to
     // let the GC figure out that it should go away.
     _contextPool = null;
-    
+
     // Close the client and release its resources
     try {
       _client.close ();
     } catch (IOException e) {
-      _logger.error( "Error closing HTTP client connection pool", e );
+      _logger.error ("Error closing HTTP client connection pool", e);
     }
   }
 
@@ -115,23 +116,74 @@ public class HttpWebHelper
       }
     }
   }
-  
-  public byte[] getBytes( URL url, String accept ) throws IOException {
+
+  // TODO Shiva: Verify that the usage of this in qti scoring engine is kosher!
+  public String submitForm (String url, Map<String, Object> formParameters, int maxTries, _Ref<Integer> httpStatusCode) throws IOException {
+    // 1 Create the Apache Commons PostMethod object.
+    // 2 Add everything from formParameters to the PostMethod object as
+    // parameters. Remember to run .toString on each object.
+    // 3 Make POST calls as show in here:
+    // http://hc.apache.org/httpclient-3.x/tutorial.html
+    // 4 One divergence from example code in step 3 is that the whole block
+    // needs to go into a for loop that will loop over maxTries time until
+    // successful or maxTries reached.
+    // 5 If any exception happens then wrap that exception in an IOException.
+    // 6 Set httpStatusCode to statusCode from the example.
+
+    for (int i = 1; i <= maxTries; i++) {
+      try {
+
+        HttpPost postMethod = new HttpPost (url);
+
+        BasicHttpParams httpParams = new BasicHttpParams ();
+        for (Map.Entry<String, Object> entry : formParameters.entrySet ())
+          httpParams.setParameter (entry.getKey (), entry.getValue ().toString ());
+        postMethod.setParams (httpParams);
+
+        HttpResponse response = _client.execute (postMethod, _contextPool.get ());
+
+        if (response != null) {
+
+          httpStatusCode.set (response.getStatusLine ().getStatusCode ());
+
+          if (httpStatusCode.get () != HttpServletResponse.SC_OK)
+            throw new IOException (String.format ("Http Status code is %s", "" + httpStatusCode.get ()));
+
+          HttpEntity responseEntity = response.getEntity ();
+          if (responseEntity != null) {
+            return EntityUtils.toString (responseEntity);
+          } else {
+            throw new IOException ("Could not retrieve response; responseEntity is null.");
+          }
+        } else {
+          throw new IOException ("Could not retrieve response; response is null.");
+        }
+      } catch (IOException e) {
+        _logger.error ("Could not retrieve response: ", e.getMessage ());
+        System.err.println ("Error encountered:" + e.getMessage ());
+        e.printStackTrace ();
+        if (i == maxTries)
+          throw e;
+      }
+    }
+    throw new IOException ("Could not retrive result.");
+  }
+
+  public byte[] getBytes (URL url, String accept) throws IOException {
     HttpGet get;
     try {
-      get = new HttpGet( url.toURI () );
+      get = new HttpGet (url.toURI ());
     } catch (URISyntaxException e) {
-      throw new IOException( "Cannot get a valid URI from the supplied URL", e );
+      throw new IOException ("Cannot get a valid URI from the supplied URL", e);
     }
-    if ( accept != null ) {
-      get.setHeader ( "Accept", accept );
+    if (accept != null) {
+      get.setHeader ("Accept", accept);
     }
-    try ( CloseableHttpResponse resp = _client.execute( get ) ) {
-      if ( resp.getStatusLine ().getStatusCode () != 200 ) {
-        throw new IOException( String.format( "Received status %d %s from %s, expected 200 OK",
-            resp.getStatusLine ().getStatusCode (), resp.getStatusLine ().getReasonPhrase (), url.toString() ) );
+    try (CloseableHttpResponse resp = _client.execute (get)) {
+      if (resp.getStatusLine ().getStatusCode () != 200) {
+        throw new IOException (String.format ("Received status %d %s from %s, expected 200 OK", resp.getStatusLine ().getStatusCode (), resp.getStatusLine ().getReasonPhrase (), url.toString ()));
       }
-      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      ByteArrayOutputStream stream = new ByteArrayOutputStream ();
       resp.getEntity ().writeTo (stream);
       return stream.toByteArray ();
     }

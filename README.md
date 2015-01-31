@@ -1,6 +1,6 @@
-# Welcome to the SharedMultiJarDev Application
+# Welcome to the SharedMultiJar Application
 
-The SharedMultiJarDev is group of shared modules that can be used by other projects for common functionality.
+The SharedMultiJar project is group of shared modules that can be used by other projects for common functionality.
 
 ## License ##
 This project is licensed under the [AIR Open Source License v1.0](http://www.smarterapp.org/documents/American_Institutes_for_Research_Open_Source_Software_License.pdf).
