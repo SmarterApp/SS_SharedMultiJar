@@ -11,8 +11,10 @@ package AIR.Common.Web;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
@@ -27,6 +29,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -133,12 +137,18 @@ public class HttpWebHelper
     for (int i = 1; i <= maxTries; i++) {
       try {
 
-        HttpPost postMethod = new HttpPost (url);
+        RequestBuilder postMethodRequestBuilder = null;
 
-        BasicHttpParams httpParams = new BasicHttpParams ();
+        try {
+          postMethodRequestBuilder = RequestBuilder.post ().setUri (new URI (url));
+        } catch (URISyntaxException e) {
+          throw new IOException (e);
+        }
+
         for (Map.Entry<String, Object> entry : formParameters.entrySet ())
-          httpParams.setParameter (entry.getKey (), entry.getValue ().toString ());
-        postMethod.setParams (httpParams);
+          postMethodRequestBuilder.addParameter (entry.getKey (), entry.getValue ().toString ());
+
+        HttpUriRequest postMethod = postMethodRequestBuilder.build ();
 
         HttpResponse response = _client.execute (postMethod, _contextPool.get ());
 
@@ -186,6 +196,22 @@ public class HttpWebHelper
       ByteArrayOutputStream stream = new ByteArrayOutputStream ();
       resp.getEntity ().writeTo (stream);
       return stream.toByteArray ();
+    }
+  }
+
+  public static void main (String[] args) {
+    try {
+      HttpWebHelper webHelper = new HttpWebHelper ();
+
+      Map<String, Object> parameters = new HashMap<String, Object> ();
+      parameters.put ("response", "4");
+
+      String url = "http://localhost:8080/parsable";
+      _Ref<Integer> statusCode = new _Ref<Integer> (HttpServletResponse.SC_OK);
+
+      System.err.println (webHelper.submitForm (url, parameters, 3, statusCode));
+    } catch (Exception exp) {
+      exp.printStackTrace ();
     }
   }
 }

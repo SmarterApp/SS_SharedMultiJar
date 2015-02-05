@@ -36,8 +36,7 @@ public class XmlElement
     this._element = ele;
   }
 
-  public Parent getParent ()
-  {
+  public Parent getParent () {
     return _element.getParent ();
   }
 
@@ -46,13 +45,11 @@ public class XmlElement
    * that Content object directly. TODO : If you need access to the Content
    * object as Element - lets talk about it.
    */
-  public Content getContentNode ()
-  {
+  public Content getContentNode () {
     return _element;
   }
 
-  public String getLocalName ()
-  {
+  public String getLocalName () {
     /*
      * We follow this .NET API
      * http://msdn.microsoft.com/en-us/library/system.xml
@@ -115,6 +112,12 @@ public class XmlElement
     return expr.evaluateFirst (_element);
   }
 
+  public Element selectSingleNode (String xpath) {
+    XPathFactory factory = XPathFactory.instance ();
+    XPathExpression<Element> expr = factory.compile (xpath, Filters.element ());
+    return expr.evaluateFirst (_element);
+  }
+
   public List<Element> getElementsByTagName (String name) {
     List<Element> list = new ArrayList<Element> ();
     if (!(_element instanceof Element))
@@ -131,8 +134,7 @@ public class XmlElement
     return list;
   }
 
-  public String getInnerText ()
-  {
+  public String getInnerText () {
     return _element.getValue ();
   }
 
@@ -172,8 +174,7 @@ public class XmlElement
     }
   }
 
-  public XmlElement getPreviousSibling ()
-  {
+  public XmlElement getPreviousSibling () {
     if (_element.getParent () == null)
       return null;
 
@@ -184,10 +185,8 @@ public class XmlElement
     return null;
   }
 
-  public XmlElement insertBefore (Content node, Content refNode)
-  {
-    if (_element instanceof Element)
-    {
+  public XmlElement insertBefore (Content node, Content refNode) {
+    if (_element instanceof Element) {
       Element castedElement = (Element) _element;
       int existingPosition = castedElement.indexOf (refNode);
       return new XmlElement (castedElement.addContent (existingPosition, node));
@@ -195,19 +194,15 @@ public class XmlElement
     return null;
   }
 
-  public List<Element> getChildNodes ()
-  {
-    if (_element instanceof Element)
-    {
+  public List<Element> getChildNodes () {
+    if (_element instanceof Element) {
       return ((Element) _element).getChildren ();
     }
     return new ArrayList<Element> ();
   }
 
-  public XmlElement getLastChild ()
-  {
-    if (_element instanceof Element)
-    {
+  public XmlElement getLastChild () {
+    if (_element instanceof Element) {
       List<Element> childNodes = getChildNodes ();
       if (childNodes.size () > 0)
         return new XmlElement (childNodes.get (childNodes.size () - 1));
@@ -215,10 +210,8 @@ public class XmlElement
     return null;
   }
 
-  public XmlElement getFirstChild ()
-  {
-    if (_element instanceof Element)
-    {
+  public XmlElement getFirstChild () {
+    if (_element instanceof Element) {
       List<Element> childNodes = getChildNodes ();
       if (childNodes.size () > 0)
         return new XmlElement (childNodes.get (0));
@@ -227,10 +220,8 @@ public class XmlElement
   }
 
   // This is tested
-  public boolean hasChildNodes ()
-  {
-    if (_element instanceof Element)
-    {
+  public boolean hasChildNodes () {
+    if (_element instanceof Element) {
       List<Element> childNodes = getChildNodes ();
       if (childNodes.size () > 0)
         return true;
@@ -238,10 +229,8 @@ public class XmlElement
     return false;
   }
 
-  public XmlElement removeChild (Content node)
-  {
-    if (_element instanceof Parent)
-    {
+  public XmlElement removeChild (Content node) {
+    if (_element instanceof Parent) {
       Parent castedElement = (Parent) _element;
       // TODO: Minor point. Should we just use .removeContent(Content) instead?
       // That way we can avoid two look ups through the descendants list.
@@ -259,12 +248,10 @@ public class XmlElement
    * to think about is when Parent object inherits from Docuemnt rather than
    * Content. In that case we will return the root element of Parent object.
    */
-  public static XmlElement getXmlElementForParent (Parent parent)
-  {
+  public static XmlElement getXmlElementForParent (Parent parent) {
     if (parent instanceof Content)
       return new XmlElement ((Content) parent);
-    else if (parent instanceof Document)
-    {
+    else if (parent instanceof Document) {
       return new XmlElement (((Document) parent).getRootElement ());
     }
     // TODO : how to print a more valid log ? I cannot find anything in the
