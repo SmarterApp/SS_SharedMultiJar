@@ -26,6 +26,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -48,17 +49,26 @@ import AIR.Common.xml.TdsXmlOutputFactory;
 
 public class HttpWebHelper
 {
-  private static final Logger       _logger      = LoggerFactory.getLogger (HttpWebHelper.class);
+  private static final Logger       _logger                 = LoggerFactory.getLogger (HttpWebHelper.class);
 
+  private int                       _requestTimeOutInMillis = 10000;
   private final CloseableHttpClient _client;
 
-  private ThreadLocal<HttpContext>  _contextPool = new ThreadLocal<HttpContext> ()
-                                                 {
-                                                   @Override
-                                                   protected HttpContext initialValue () {
-                                                     return new BasicHttpContext ();
-                                                   }
-                                                 };
+  private ThreadLocal<HttpContext>  _contextPool            = new ThreadLocal<HttpContext> ()
+                                                            {
+                                                              @Override
+                                                              protected HttpContext initialValue () {
+                                                                return new BasicHttpContext ();
+                                                              }
+                                                            };
+
+  public int getTimeoutInMillis () {
+    return _requestTimeOutInMillis;
+  }
+
+  public void setTimeoutInMillis (int timeoutInMillis) {
+    _requestTimeOutInMillis = timeoutInMillis;
+  }
 
   public HttpWebHelper () {
     PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager ();
@@ -147,6 +157,13 @@ public class HttpWebHelper
 
         for (Map.Entry<String, Object> entry : formParameters.entrySet ())
           postMethodRequestBuilder.addParameter (entry.getKey (), entry.getValue ().toString ());
+
+        // TODO Shiva: am I setting all the timeouts right ?
+        // Are the timeouts in millis or seconds?
+        // Should there be a separate getter/setter for each of the different
+        // timeouts?
+        postMethodRequestBuilder.setConfig (RequestConfig.custom ().setConnectionRequestTimeout (getTimeoutInMillis ()).setConnectTimeout (getTimeoutInMillis ())
+            .setSocketTimeout (getTimeoutInMillis ()).build ());
 
         HttpUriRequest postMethod = postMethodRequestBuilder.build ();
 

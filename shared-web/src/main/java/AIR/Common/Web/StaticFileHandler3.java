@@ -98,7 +98,6 @@ public class StaticFileHandler3
 
       private static File GetFileInfo(_Ref<String> physicalPathRef) throws TDSHttpException 
       {
-        _logger.info("<<<<<<<<<<<<<<<<<<<<<GetFileInfo: Start>>>>>>>>>>>>>>>>>>>>>>>>>>");
         File fileInfo = null;
           try 
           {
@@ -139,7 +138,6 @@ public class StaticFileHandler3
             _logger.error (secEx.getMessage (),secEx);
               throw new TDSHttpException(HttpStatus.UNAUTHORIZED.value (), "File_enumerator_access_denied");
           } 
-          _logger.info("<<<<<<<<<<<<<<<<<<<<<GetFileInfo: End>>>>>>>>>>>>>>>>>>>>>>>>>>");
           return fileInfo;
       }
       /**
@@ -148,7 +146,6 @@ public class StaticFileHandler3
        * @return
        */
       private static boolean isCaseInsensitiveFileExists(_Ref<File> fileRef,_Ref<String> physicalPathRef) {
-        _logger.info("<<<<<<<<<<<<<<<<<<<<< isCaseInsensitiveFileExists: Start :"+getCurrentTime()+" >>>>>>>>>>>>>>>>>>>>>>>>>>");
         String pathEncoded = HttpContext.getCurrentContext ().getRequest ().getParameter("path");
         String pathDecoded = EncryptionHelper.DecodeFromBase64(pathEncoded);
         String fileName = HttpContext.getCurrentContext ().getRequest ().getParameter("file");
@@ -164,13 +161,7 @@ public class StaticFileHandler3
             return true;
           }
         }
-        _logger.info("<<<<<<<<<<<<<<<<<<<<< isCaseInsensitiveFileExists: End :"+getCurrentTime()+" >>>>>>>>>>>>>>>>>>>>>>>>>>");
         return false;
-      }
-      
-      private static String getCurrentTime() {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat ("MM/dd/yyyy HH:mm:ss a");
-        return dateFormatter.format (new Date());
       }
       
       // initial space characters are skipped, and the String of digits up until the first non-digit
@@ -555,7 +546,6 @@ public class StaticFileHandler3
       
       public static void ProcessRequestInternal(HttpServletRequest request, HttpServletResponse response, String pathOverride) throws TDSHttpException, IOException 
       { 
-        _logger.info ("<<<<<<<<<<<<<Inside ProcessRequestInternal of StaticFileHandler3>>>>>>>>>>>>>>");
           String physicalPath; 
           File fileInfo;
           long fileLength; 
