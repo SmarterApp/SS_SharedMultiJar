@@ -8,12 +8,17 @@
  ******************************************************************************/
 package AIR.Common.Web;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +37,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -44,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import AIR.Common.Helpers._Ref;
+import AIR.Common.Utilities.UrlEncoderDecoderUtils;
 import AIR.Common.xml.IXmlSerializable;
 import AIR.Common.xml.TdsXmlOutputFactory;
 
@@ -144,6 +151,71 @@ public class HttpWebHelper
     // 5 If any exception happens then wrap that exception in an IOException.
     // 6 Set httpStatusCode to statusCode from the example.
 
+    StringBuilder payloadBuilder = new StringBuilder ();
+    for (Map.Entry<String, Object> entry : formParameters.entrySet ())
+      payloadBuilder.append (UrlEncoderDecoderUtils.encode (entry.getKey ()) + "=" + UrlEncoderDecoderUtils.encode (entry.getValue ().toString ()) + "&");
+    String encodedData = payloadBuilder.toString ();
+
+    URL searchUrl = new URL (url);
+    for (int i = 1; i <= maxTries; i++) {
+      try {
+        HttpURLConnection connection = (HttpURLConnection) searchUrl.openConnection ();
+        connection.setDoOutput (true);
+        connection.setRequestMethod ("POST");
+        connection.setRequestProperty ("Content-Length", "" + encodedData.length ());
+        OutputStream os = connection.getOutputStream ();
+        os.write (encodedData.getBytes ());
+
+        // check if there's an http error
+        int rc = connection.getResponseCode ();
+        httpStatusCode.set (rc);
+
+        if (rc == HttpServletResponse.SC_OK) {
+          // no http response code error
+          // read the result from the server
+          BufferedReader rd = new BufferedReader (new InputStreamReader (connection.getInputStream ()));
+
+          StringBuilder sb = new StringBuilder ();
+          String line = null;
+          while ((line = rd.readLine ()) != null)
+            sb.append (line + "\n");
+
+          return sb.toString ();
+        } else
+          throw new IOException (String.format ("Http Status code is %s", "" + httpStatusCode.get ()));
+      } catch (Exception e) {
+        _logger.error ("Could not retrieve response: ", e.getMessage ());
+        e.printStackTrace ();
+        if (i == maxTries)
+          throw new IOException (e);
+      }
+    }
+
+    // for some reason we ended here. just throw an exception.
+    throw new IOException ("Could not retrive result.");
+  }
+
+  @Deprecated
+  /*
+   * @deprecated Shiva: This method was causing a connection pool error. ideally
+   * we need to switch to a pooled connection. but i did not have time to
+   * investigate this and hence I have the simple synchronous blocking
+   * submitForm above. This is only here so that I can fix this in the future
+   * but until then use submitForm above.
+   */
+  // TODO Shiva: Verify that the usage of this in qti scoring engine is kosher!
+  public String submitForm2 (String url, Map<String, Object> formParameters, int maxTries, _Ref<Integer> httpStatusCode) throws IOException {
+    // 1 Create the Apache Commons PostMethod object.
+    // 2 Add everything from formParameters to the PostMethod object as
+    // parameters. Remember to run .toString on each object.
+    // 3 Make POST calls as show in here:
+    // http://hc.apache.org/httpclient-3.x/tutorial.html
+    // 4 One divergence from example code in step 3 is that the whole block
+    // needs to go into a for loop that will loop over maxTries time until
+    // successful or maxTries reached.
+    // 5 If any exception happens then wrap that exception in an IOException.
+    // 6 Set httpStatusCode to statusCode from the example.
+
     for (int i = 1; i <= maxTries; i++) {
       try {
 
@@ -194,6 +266,56 @@ public class HttpWebHelper
       }
     }
     throw new IOException ("Could not retrive result.");
+  }
+
+  public static String getResponse (String urlString, String postBody) throws HttpException {
+    return getResponse (urlString, postBody, "json");
+  }
+
+  /*
+   * Shiva: The following getResponse method is just a simple POST
+   * implementation for testing purposes. This needs to be refined further
+   * before use in production systems.
+   */
+  public static String getResponse (String urlString, String postBody, String contentMimeType) throws HttpException {
+    try {
+      // postRequestParams = URLEncoder.encode (scoreRequest, "UTF-8");
+      URL url = new URL (urlString);
+      URLConnection urlConn = url.openConnection ();
+      // urlConn.setConnectTimeout (2 * 60 * 1000);
+      // urlConn.setReadTimeout (20 * 60 * 1000);
+      urlConn.setRequestProperty ("Content-Type", String.format ("application/%s; charset=UTF-8", contentMimeType));
+      urlConn.setUseCaches (false);
+
+      // the request will return a response
+      urlConn.setDoInput (true);
+
+      // set request method to POST
+      urlConn.setDoOutput (true);
+
+      OutputStreamWriter writer = new OutputStreamWriter (urlConn.getOutputStream ());
+      writer.write (postBody);
+      writer.flush ();
+
+      // reads response, store line by line in an array of Strings
+      BufferedReader reader = new BufferedReader (new InputStreamReader (urlConn.getInputStream ()));
+
+      StringBuffer bfr = new StringBuffer ();
+
+      String line = "";
+      while ((line = reader.readLine ()) != null) {
+        bfr.append (line + "\n");
+      }
+
+      reader.close ();
+
+      return bfr.toString ();
+
+    } catch (Exception exp) {
+      exp.printStackTrace ();
+      _logger.error ("Error sending request/receiving response from server.", exp);
+      throw new HttpException (exp);
+    }
   }
 
   public byte[] getBytes (URL url, String accept) throws IOException {

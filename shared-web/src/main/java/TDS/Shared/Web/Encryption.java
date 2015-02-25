@@ -45,7 +45,7 @@ public class Encryption implements IEncryption
 
   private static final Logger  _logger            = LoggerFactory.getLogger (Encryption.class);
 
-  public static final int      MINIMUM_KEY_LENGTH = 10;
+  public static final int      MINIMUM_KEY_LENGTH = 24;
 
   @Autowired
   private ConfigurationManager configurationManager;
@@ -82,7 +82,7 @@ public class Encryption implements IEncryption
   protected void init () {
     final String encryptionKey = configurationManager.getAppSettings ().get ("EncryptionKey");
 
-    if (encryptionKey == null || encryptionKey.length () < MINIMUM_KEY_LENGTH) {
+    if (encryptionKey == null || StringUtils.isBlank (encryptionKey) || encryptionKey.length () < MINIMUM_KEY_LENGTH) {
       throw new TDSEncryptionException (String.format ("Number of characters for key must be greater than %s", MINIMUM_KEY_LENGTH));
     }
 
