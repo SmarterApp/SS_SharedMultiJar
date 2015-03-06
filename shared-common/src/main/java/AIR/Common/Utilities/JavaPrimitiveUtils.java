@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Educational Online Test Delivery System 
- * Copyright (c) 2014 American Institutes for Research
- *   
- * Distributed under the AIR Open Source License, Version 1.0 
- * See accompanying file AIR-License-1_0.txt or at
- * http://www.smarterapp.org/documents/American_Institutes_for_Research_Open_Source_Software_License.pdf
+ * Educational Online Test Delivery System Copyright (c) 2014 American
+ * Institutes for Research
+ * 
+ * Distributed under the AIR Open Source License, Version 1.0 See accompanying
+ * file AIR-License-1_0.txt or at http://www.smarterapp.org/documents/
+ * American_Institutes_for_Research_Open_Source_Software_License.pdf
  ******************************************************************************/
 package AIR.Common.Utilities;
+
+import org.apache.commons.lang3.StringUtils;
 
 import AIR.Common.Helpers._Ref;
 
@@ -21,6 +23,12 @@ public class JavaPrimitiveUtils
     }
   }
 
+  // Shiva: this provides .NET style number parsing where formatting characters
+  // may be part of the string.
+  public static boolean longTryParseFormattedString (String value, _Ref<Long> ref) {
+    return longTryParse (removeFormattingFromNumberString (value), ref);
+  }
+
   public static boolean intTryParse (String value, _Ref<Integer> ref) {
     try {
       ref.set (Integer.parseInt (value));
@@ -29,7 +37,13 @@ public class JavaPrimitiveUtils
       return false;
     }
   }
-  
+
+  // Shiva: this provides .NET style number parsing where formatting characters
+  // may be part of the string.
+  public static boolean intTryParseFormattedString (String value, _Ref<Integer> ref) {
+    return intTryParse (removeFormattingFromNumberString (value), ref);
+  }
+
   public static boolean floatTryParse (String value, _Ref<Float> ref) {
     try {
       ref.set (Float.parseFloat (value));
@@ -38,7 +52,13 @@ public class JavaPrimitiveUtils
       return false;
     }
   }
-  
+
+  // Shiva: this provides .NET style number parsing where formatting characters
+  // may be part of the string.
+  public static boolean floatTryParseFormattedString (String value, _Ref<Float> ref) {
+    return floatTryParse (removeFormattingFromNumberString (value), ref);
+  }
+
   public static boolean doubleTryParse (String value, _Ref<Double> ref) {
     try {
       ref.set (Double.parseDouble (value));
@@ -46,6 +66,10 @@ public class JavaPrimitiveUtils
     } catch (NumberFormatException exp) {
       return false;
     }
+  }
+
+  public static boolean doubleTryParseFormattedString (String value, _Ref<Double> ref) {
+    return doubleTryParse (removeFormattingFromNumberString (value), ref);
   }
 
   public static boolean boolTryParse (String value, _Ref<Boolean> ref) {
@@ -74,5 +98,10 @@ public class JavaPrimitiveUtils
       }
     }
     return false;
+  }
+
+  private static String removeFormattingFromNumberString (String value)
+  {
+    return StringUtils.replace (value, ",", "");
   }
 }
