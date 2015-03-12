@@ -37,7 +37,11 @@ public class XmlElement
   }
 
   public Parent getParent () {
-    return _element.getParent ();
+	return _element.getParent ();
+  }
+
+  public XmlElement getParentElement () {
+	return new XmlElement(_element.getParentElement ());
   }
 
   /*
@@ -134,6 +138,10 @@ public class XmlElement
     return list;
   }
 
+  public String getInnerTextNormalize () {
+	return getInnerText().replace(" ", "");
+  }
+
   public String getInnerText () {
     return _element.getValue ();
   }
@@ -189,6 +197,8 @@ public class XmlElement
     if (_element instanceof Element) {
       Element castedElement = (Element) _element;
       int existingPosition = castedElement.indexOf (refNode);
+      if (existingPosition  < 0)
+    	  existingPosition = 0;
       return new XmlElement (castedElement.addContent (existingPosition, node));
     }
     return null;
@@ -258,4 +268,18 @@ public class XmlElement
     // Parent class.
     throw new NotProperJDomNodeException (String.format ("getXmlElementForParent() failed as the argument is neither of type Content nor of type Document. Parent: %s.", parent.toString ()));
   }
+  
+  @Override public boolean equals( Object aThat ) {
+	  if ( this == aThat ) return true;
+	  if ( !(aThat instanceof XmlElement) ) return false;
+	  XmlElement that = (XmlElement)aThat;
+	  return (this.getLocalName().equals(that.getLocalName()) &&
+			  this.getChildNodes().size() == that.getChildNodes().size() &&
+			  this.getInnerText().equals(that.getInnerText()));
+	  }
+
+	  @Override public int hashCode() {
+	    return (this.getLocalName().hashCode() + this.getChildNodes().size() + this.getInnerTextNormalize().hashCode());
+	  }
+
 }

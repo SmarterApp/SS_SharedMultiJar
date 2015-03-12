@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>shared-web</artifactId>
 	<name>Shared HTTP server and client code</name>
@@ -84,7 +83,7 @@
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk16</artifactId>
 		</dependency>
-		<!-- Following dependency uadetector is for UserAgent Utility-->
+		<!-- Following dependency uadetector is for UserAgent Utility -->
 		<dependency>
 			<groupId>net.sf.uadetector</groupId>
 			<artifactId>uadetector-resources</artifactId>
@@ -96,10 +95,14 @@
 			<artifactId>myfaces-impl</artifactId>
 		</dependency>
 		<dependency>
-	      <groupId>commons-net</groupId>
-	      <artifactId>commons-net</artifactId>
-        </dependency>
-      	
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+		</dependency>
 		<!-- End JSF integration -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>fluent-hc</artifactId>
+			<version>4.3.6</version>
+		</dependency>
 	</dependencies>
 </project>

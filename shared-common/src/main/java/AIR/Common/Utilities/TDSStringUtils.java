@@ -8,6 +8,8 @@
  ******************************************************************************/
 package AIR.Common.Utilities;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,5 +54,11 @@ public class TDSStringUtils
 
   public static String getCSharpBooleanToString (boolean value) {
     return value ? "True" : "False";
+  }
+
+  public static String exceptionToString (Throwable t) {
+    StringWriter strn = new StringWriter ();
+    t.printStackTrace (new PrintWriter (strn));
+    return strn.toString ();
   }
 }
