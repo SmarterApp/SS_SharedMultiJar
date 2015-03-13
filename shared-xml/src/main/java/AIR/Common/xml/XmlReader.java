@@ -52,7 +52,7 @@ public class XmlReader
   private Namespace                            _rootNameSpace = null;
 
   public XmlReader (InputStream file) throws IOException, JDOMException {
-    buildDocument (file);
+    this (new InputStreamReader (file));
   }
 
   public XmlReader (Reader file) throws IOException, JDOMException {
