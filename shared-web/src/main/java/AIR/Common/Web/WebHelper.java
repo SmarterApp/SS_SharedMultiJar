@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Educational Online Test Delivery System 
- * Copyright (c) 2014 American Institutes for Research
- *   
- * Distributed under the AIR Open Source License, Version 1.0 
- * See accompanying file AIR-License-1_0.txt or at
- * http://www.smarterapp.org/documents/American_Institutes_for_Research_Open_Source_Software_License.pdf
+ * Educational Online Test Delivery System Copyright (c) 2014 American
+ * Institutes for Research
+ * 
+ * Distributed under the AIR Open Source License, Version 1.0 See accompanying
+ * file AIR-License-1_0.txt or at http://www.smarterapp.org/documents/
+ * American_Institutes_for_Research_Open_Source_Software_License.pdf
  ******************************************************************************/
 /**
  *
@@ -22,7 +22,7 @@ import AIR.Common.Web.Session.HttpContext;
 
 /**
  * @author Shiva BEHERA [sbehera@air.org]
- *
+ * 
  */
 public class WebHelper
 {
@@ -36,7 +36,7 @@ public class WebHelper
       return 0;
     return Integer.parseInt (value);
   }
-  
+
   public static long getQueryValueLong (String name) {
     String value = getQueryString (name);
     if (StringUtils.isEmpty (value))
@@ -45,9 +45,9 @@ public class WebHelper
   }
 
   public static boolean getQueryBoolean (String name) {
-    return getQueryBoolean(name, false);
+    return getQueryBoolean (name, false);
   }
-  
+
   public static boolean getQueryBoolean (String name, boolean defaultValue) {
     String value = getQueryString (name);
     if (value != null) {
@@ -66,7 +66,7 @@ public class WebHelper
 
   /**
    * Set Content Type in HttpServletResponse
-   *
+   * 
    * @param contentType
    */
   public static void setContentType (String contentType)
@@ -76,7 +76,7 @@ public class WebHelper
 
   /**
    * Set Content Type in HttpServletResponse based in Enum ContentType value
-   *
+   * 
    * @param contentType
    */
   public static void setContentType (ContentType contentType)
@@ -117,4 +117,10 @@ public class WebHelper
     writeString (String.format (value, values));
   }
 
+  // SB-366 For writing json response
+  public static void writeJsonString (String value) throws IOException
+  {
+    HttpContext.getCurrentContext ().getResponse ().setContentType ("application/json");
+    writeString (value);
+  }
 }

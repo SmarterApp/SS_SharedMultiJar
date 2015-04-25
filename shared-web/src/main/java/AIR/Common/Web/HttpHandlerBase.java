@@ -80,6 +80,11 @@ public abstract class HttpHandlerBase implements BeanFactoryAware
     WebHelper.writeString (value, values);
   }
 
+  // SB-366
+  public static void writeJsonString (String value) throws IOException {
+    WebHelper.writeJsonString (value);
+  }
+
   // @ExceptionHandler ({ IOException.class })
   // @ResponseBody
   // public void handleReturnStatusException (IOException exp,

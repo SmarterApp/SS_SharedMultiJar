@@ -51,19 +51,27 @@ public class Server
   // and "~/" or "./xyz" or "~/xyz" will not be mapped properly
   // to real path.
   public static String mapPath (String virtualPath) {
+    String path = null;
     if (Path.isAbsolute (virtualPath))
-      return virtualPath;
+    {
+      path = virtualPath;
+    }
     // if the path begins with "~/" then remove the "~/" as it will be mapped to
     // the
     // realpath.
     // TODO shiva/sajib are there any other such cases e.g. "./"?
-    if (virtualPath.startsWith ("~/"))
-      virtualPath = virtualPath.substring (2);
+    else
+    {
+      if (virtualPath.startsWith ("~/"))
+        virtualPath = virtualPath.substring (2);
 
-    if (virtualPath.indexOf (getContextPath ()) == 0)
-      virtualPath = virtualPath.substring (getContextPath ().length ());
+      if (virtualPath.indexOf (getContextPath ()) == 0)
+        virtualPath = virtualPath.substring (getContextPath ().length ());
+      path = CaseInsensitiveFileNameFilter.remapUri (virtualPath);
+      path = _context.getRealPath (path);
+    }
 
-    return _context.getRealPath (virtualPath);
+    return path;
   }
 
   /*
