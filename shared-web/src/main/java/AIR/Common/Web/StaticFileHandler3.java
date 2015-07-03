@@ -149,15 +149,11 @@ public class StaticFileHandler3
         String pathEncoded = HttpContext.getCurrentContext ().getRequest ().getParameter("path");
         String pathDecoded = EncryptionHelper.DecodeFromBase64(pathEncoded);
         String fileName = HttpContext.getCurrentContext ().getRequest ().getParameter("file");
-        _logger.info ("pathEncoded::"+pathEncoded);
-        _logger.info ("pathDecoded::"+pathEncoded);
-        _logger.info ("fileName::"+pathEncoded);
         File fileDir = new File(pathDecoded);
         for(String fileInDir:fileDir.list ()) {
           if(fileInDir.equalsIgnoreCase (fileName)) {
             fileRef.set (new File(pathDecoded,fileInDir));
             physicalPathRef.set (physicalPathRef.get ().replace (fileName, fileInDir));
-            _logger.info ("Actual Case sensitive File Name ::"+fileInDir);
             return true;
           }
         }
@@ -552,7 +548,6 @@ public class StaticFileHandler3
           Date lastModifiedInUtc; 
           String etag;
           String rangeHeader; 
-          _logger.info ("pathOverride::"+pathOverride);
           if (pathOverride != null)
           {
               physicalPath = pathOverride;

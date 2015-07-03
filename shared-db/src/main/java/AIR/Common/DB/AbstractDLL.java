@@ -19,7 +19,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
+
+import javax.xml.bind.DatatypeConverter;
 
 // TODO: NotImplementedException was dropped from lang3, but is supposed to be
 // restored in 3.2. Until then, we are using lang2
@@ -159,7 +162,7 @@ public abstract class AbstractDLL
       }
     }
     try {
-      return insertBucket.executeInsert (connection);
+    	return insertBucket.executeInsert (connection);
     } catch (SQLException exp) {
       throw new ReturnStatusException (exp);
     }
@@ -167,9 +170,8 @@ public abstract class AbstractDLL
 
   public int insertBatchAsMulti (SQLConnection connection, String insertTemplatePartial, String insertColumnsPartial, SingleDataResultSet result) throws ReturnStatusException {
     InsertBucket insertBucket = new InsertBucket (insertTemplatePartial, insertColumnsPartial, result, getTdsSettings ());
-
     try {
-      return insertBucket.executeInsertAsMulti (connection);
+    	return insertBucket.executeInsertAsMulti (connection);
     } catch (SQLException exp) {
       throw new ReturnStatusException (exp);
     }
@@ -243,6 +245,54 @@ public abstract class AbstractDLL
     return results;
   }
 
+  protected void executePreparedStatementBatch (SQLConnection connection,String query,List<Map<Integer,Object>> paramsList) throws ReturnStatusException{
+    PreparedStatement prepStmt = null;
+    try {
+      boolean preexistingAutoCommitMode = connection.getAutoCommit ();
+      connection.setAutoCommit (false);
+      prepStmt = connection.prepareStatement(query);
+      
+      if(paramsList!=null) {
+        for(Map<Integer,Object> params:paramsList) {
+          Iterator<Entry<Integer,Object>> param =  params.entrySet ().iterator ();
+          while(param.hasNext ()) {
+            Entry<Integer,Object> entry = param.next ();
+            if(entry.getValue () instanceof String) {
+              prepStmt.setString (entry.getKey (), entry.getValue ().toString ());
+            } else if(entry.getValue () instanceof Integer) {
+              prepStmt.setInt (entry.getKey (), (Integer)entry.getValue ());
+            } else if(entry.getValue () instanceof Date) {
+              prepStmt.setString  (entry.getKey (), String.format ("%s", AbstractDateUtilDll
+                  .getDateAsFormattedMillisecondsString ((Date)entry.getValue ())));
+            } else if (entry.getValue () instanceof UUID) {
+              String newStr = entry.getValue ().toString ().replaceAll ("-", "");
+              prepStmt.setBytes (entry.getKey (), DatatypeConverter.parseHexBinary (newStr));
+            } else if (entry.getValue ()  instanceof Boolean) {
+              prepStmt.setBoolean (entry.getKey (), (Boolean)entry.getValue ());
+            }
+            
+          }
+          prepStmt.addBatch ();
+        }
+      }
+      prepStmt.executeBatch ();
+      prepStmt.close ();
+      connection.commit ();
+      // reset autocommit.
+      connection.setAutoCommit (preexistingAutoCommitMode);
+    } catch (SQLException exp) {
+      throw new ReturnStatusException (exp);
+    } finally {
+      if (prepStmt!=null)
+        try {
+          prepStmt.close ();  
+        } catch (SQLException e) {
+          
+        }
+    }
+  }
+  
+  
   // instead of doing _isToday we call GetToday to get the start of the 24
   // hour
   // period and in our queries implement that instead.
