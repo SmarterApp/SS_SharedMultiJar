@@ -8,18 +8,22 @@
  ******************************************************************************/
 package AIR.Common.Web;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
+import java.util.zip.GZIPOutputStream;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -42,13 +46,10 @@ public class StaticFileHandler3
   
     private static final Logger _logger = LoggerFactory.getLogger (StaticFileHandler3.class);
 
-//      private final static String RANGE_BOUNDARY = "<q1w2e3r4t5y6u7i8o9p0zaxscdvfbgnhmjklkl>";
-      private final static String MULTIPART_CONTENT_TYPE = "multipart/byteranges; boundary=<q1w2e3r4t5y6u7i8o9p0zaxscdvfbgnhmjklkl>"; 
-      private final static String MULTIPART_RANGE_DELIMITER = "--<q1w2e3r4t5y6u7i8o9p0zaxscdvfbgnhmjklkl>\r\n"; 
-      private final static String MULTIPART_RANGE_END = "--<q1w2e3r4t5y6u7i8o9p0zaxscdvfbgnhmjklkl>--\r\n\r\n";
-      private final static String CONTENT_RANGE_FORMAT = "bytes %s-%s/%s"; 
-      private final static int MAX_RANGE_ALLOWED = 5;
-//      private final static int ERROR_ACCESS_DENIED = 5;
+
+      private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
+      private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
+
 
       private StaticFileHandler3() {} 
       
@@ -58,26 +59,6 @@ public class StaticFileHandler3
           ProcessRequestInternal (request, response, null);
       } 
 
-      private static boolean IsOutDated(String ifRangeHeader, Date lastModified) 
-      {
-          try 
-          { 
-            Calendar lastModifiedCal  = Calendar.getInstance ();
-            lastModifiedCal.setTime (lastModified);
-            lastModifiedCal.setTimeZone (TimeZone.getTimeZone ("UTC"));
-            Date utcLastModified = lastModifiedCal.getTime ();
-            
-            Date utc = parseUTCDate(ifRangeHeader);
-            
-            
-            return (utc.before (utcLastModified));
-          } 
-          catch (Exception e)
-          {
-            _logger.error (e.getMessage (),e);
-              return true; 
-          } 
-      }
       
       private static String GenerateETag(Date lastModified, Date now) 
       {
@@ -160,9 +141,556 @@ public class StaticFileHandler3
         return false;
       }
       
-      // initial space characters are skipped, and the String of digits up until the first non-digit
+     
+      public static void ProcessRequestInternal(HttpServletRequest request, HttpServletResponse response, String pathOverride) throws TDSHttpException, IOException 
+      { 
+          String physicalPath; 
+          File fileInfo;
+          long fileLength; 
+          Date lastModifiedInUtc; 
+          String etag;
+          String rangeHeader; 
+          if (pathOverride != null)
+          {
+              physicalPath = pathOverride;
+          }
+          else
+          {
+              physicalPath = TDSHttpUtils.getCompleteRequestURL (request);
+          }
+           _Ref<String> physicalPathRef = new _Ref<String> (physicalPath);
+          try
+          {
+              fileInfo = GetFileInfo(physicalPathRef);
+              physicalPath = physicalPathRef.get ();
+          }
+          catch (TDSHttpException hex)
+          {
+            _logger.error (hex.getMessage (),hex);
+              int httpCode = hex.getHttpStatusCode ();
+              String httpError = String.format("%s (%s)", hex.getMessage (), physicalPath);
+              throw new TDSHttpException(httpCode, httpError);
+          }
+
+          // Determine Last Modified Time.  We might need it soon 
+          // if we encounter a Range: and If-Range header
+          // Using UTC time to avoid daylight savings time bug 83230 
+          Calendar lastModifiedCal = Calendar.getInstance ();
+          lastModifiedCal.setTimeInMillis (fileInfo.lastModified ());
+          lastModifiedInUtc = lastModifiedCal.getTime ();
+              
+
+          // Because we can't set a "Last-Modified" header to any time 
+          // in the future, check the last modified time and set it to
+          // Date.Now if it's in the future. 
+          // This is to fix VSWhidbey #402323
+          Date utcNow = new Date();
+          etag = GenerateETag(lastModifiedInUtc, utcNow);
+          fileLength = fileInfo.length (); 
+
+          
+          
+          
+          // is this a Range request?
+          rangeHeader = request.getHeader("Range");
+          if (rangeHeader != null && rangeHeader.toLowerCase ().startsWith("bytes") )//&& 
+//              ProcessRangeRequest(request,response, physicalPath, fileLength, rangeHeader, etag, lastModifiedInUtc)) 
+          {
+        	  processRangeRequest(request, response, true, physicalPath, fileLength, rangeHeader, etag, lastModifiedInUtc);
+        	  return;
+          }
+
+          // if we get this far, we're sending the entire file
+          SendFile(physicalPath, 0, fileLength, fileLength, response); 
+          
+      }
+      
+      private static void SendRangeNotSatisfiable(HttpServletResponse response, long fileLength) 
+      {
+          response.setStatus(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE.value ()); //416 - REQUESTED_RANGE_NOT_SATISFIABLE
+          response.setContentType(null); 
+          response.addHeader("Content-Range", "bytes */" + fileLength);
+      } 
+
+      private static void SendFile(String physicalPath, long offset, long length, long fileLength, HttpServletResponse response) throws TDSHttpException
+      {
+    	  	
+              File srcFile;
+			try {
+				srcFile = new File(physicalPath);
+			} catch (Exception e) {
+	             throw new TDSHttpException(HttpStatus.UNAUTHORIZED.value (),"Resource_access_forbidden : "+physicalPath); 
+			}
+              try {
+				byte[] bytes = java.nio.file.Files.readAllBytes(srcFile.toPath());
+				response.getOutputStream().write(bytes);
+			}  catch (IOException e) {
+				_logger.error("Error while writing file to response output stream:: ",e);
+				throw new TDSHttpException(HttpStatus.UNAUTHORIZED.value (),"Not able to write file to Outputstream: "+physicalPath);
+			}
+              
+      }
+      
+	private static void processRangeRequest(HttpServletRequest request,
+			HttpServletResponse response, boolean content, String physicalPath,
+			long fileLength, String rangeHeader, String eTag, Date lastModifiedDate)
+			throws IOException {
+		// Validate the requested file ------------------------------------------------------------
+        // URL-decode the file name (might contain spaces and on) and prepare file object.
+        File file = new File(physicalPath);
+
+        // Check if file actually exists in filesystem.
+        if (!file.exists()) {
+            // Do your thing if the file appears to be non-existing.
+            // Throw an exception, or send 404, or show default/warning page, or just ignore it.
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        
+        // return "416 Requested range not satisfiable" if the file length is zero.
+        if (fileLength <= 0) 
+        { 
+            SendRangeNotSatisfiable(response, fileLength); 
+            return;
+        }
+
+        // Prepare some variables. The ETag is an unique identifier of the file.
+        String fileName = file.getName();
+        long length = fileLength;
+        long lastModified = lastModifiedDate.getTime();
+//        String eTag = fileName + "_" + fileLength + "_" + lastModified;
+        long expires =  System.currentTimeMillis()+1000*5*60;
+
+
+        // Validate request headers for caching ---------------------------------------------------
+
+        // If-None-Match header should contain "*" or ETag. If so, then return 304.
+        String ifNoneMatch = request.getHeader("If-None-Match");
+        if (ifNoneMatch != null && matches(ifNoneMatch, eTag)) {
+            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            response.setHeader("ETag", eTag); // Required in 304.
+            response.setDateHeader("Expires", expires); // Postpone cache with 1 week.
+            return;
+        }
+
+        // If-Modified-Since header should be greater than LastModified. If so, then return 304.
+        // This header is ignored if any If-None-Match header is specified.
+        long ifModifiedSince = request.getDateHeader("If-Modified-Since");
+        if (ifNoneMatch == null && ifModifiedSince != -1 && ifModifiedSince + 1000 > lastModified) {
+            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            response.setHeader("ETag", eTag); // Required in 304.
+            response.setDateHeader("Expires", expires); // Postpone cache with 1 week.
+            return;
+        }
+
+
+        // Validate request headers for resume ----------------------------------------------------
+
+        // If-Match header should contain "*" or ETag. If not, then return 412.
+        String ifMatch = request.getHeader("If-Match");
+        if (ifMatch != null && !matches(ifMatch, eTag)) {
+            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+            return;
+        }
+
+        // If-Unmodified-Since header should be greater than LastModified. If not, then return 412.
+        long ifUnmodifiedSince = request.getDateHeader("If-Unmodified-Since");
+        if (ifUnmodifiedSince != -1 && ifUnmodifiedSince + 1000 <= lastModified) {
+            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+            return;
+        }
+
+
+        // Validate and process range -------------------------------------------------------------
+
+        // Prepare some variables. The full Range represents the complete file.
+        Range full = new Range(0, length - 1, length);
+        List<Range> ranges = new ArrayList<Range>();
+
+        // Validate and process Range and If-Range headers.
+        String range = request.getHeader("Range");
+        if (range != null) {
+
+            // Range header should match format "bytes=n-n,n-n,n-n...". If not, then return 416.
+            if (!range.matches("^bytes=\\d*-\\d*(,\\d*-\\d*)*$")) {
+                response.setHeader("Content-Range", "bytes */" + length); // Required in 416.
+                response.sendError(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+                return;
+            }
+
+            // If-Range header should either match ETag or be greater then LastModified. If not,
+            // then return full file.
+            String ifRange = request.getHeader("If-Range");
+            if (ifRange != null && !ifRange.equals(eTag)) {
+                try {
+                    long ifRangeTime = request.getDateHeader("If-Range"); // Throws IAE if invalid.
+                    if (ifRangeTime != -1 && ifRangeTime + 1000 < lastModified) {
+                        ranges.add(full);
+                    }
+                } catch (IllegalArgumentException ignore) {
+                    ranges.add(full);
+                }
+            }
+
+            // If any valid If-Range header, then process each part of byte range.
+            if (ranges.isEmpty()) {
+                for (String part : range.substring(6).split(",")) {
+                    // Assuming a file with length of 100, the following examples returns bytes at:
+                    // 50-80 (50 to 80), 40- (40 to length=100), -20 (length-20=80 to length=100).
+                    long start = sublong(part, 0, part.indexOf("-"));
+                    long end = sublong(part, part.indexOf("-") + 1, part.length());
+
+                    if (start == -1) {
+                        start = length - end;
+                        end = length - 1;
+                    } else if (end == -1 || end > length - 1) {
+                        end = length - 1;
+                    }
+
+                    // Check if Range is syntactically valid. If not, then return 416.
+                    if (start > end) {
+                        response.setHeader("Content-Range", "bytes */" + length); // Required in 416.
+                        response.sendError(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+                        return;
+                    }
+
+                    // Add range.
+                    ranges.add(new Range(start, end, length));
+                }
+            }
+        }
+
+
+        // Prepare and initialize response --------------------------------------------------------
+
+        // Get content type by file name and set default GZIP support and content disposition.
+        String contentType = MimeMapping.getMapping(physicalPath);
+        boolean acceptsGzip = false;
+        String disposition = "inline";
+
+        // If content type is unknown, then set the default value.
+        // For all content types, see: http://www.w3schools.com/media/media_mimeref.asp
+        // To add new content types, add new mime-mapping entry in web.xml.
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        // If content type is text, then determine whether GZIP content encoding is supported by
+        // the browser and expand content type with the one and right character encoding.
+        if (contentType.startsWith("text")) {
+            String acceptEncoding = request.getHeader("Accept-Encoding");
+            acceptsGzip = acceptEncoding != null && accepts(acceptEncoding, "gzip");
+            contentType += ";charset=UTF-8";
+        } 
+
+        // Else, expect for images, determine content disposition. If content type is supported by
+        // the browser, then set to inline, else attachment which will pop a 'save as' dialogue.
+        else if (!contentType.startsWith("image")) {
+            String accept = request.getHeader("Accept");
+            disposition = accept != null && accepts(accept, contentType) ? "inline" : "attachment";
+        }
+
+        // Initialize response.
+        response.reset();
+        response.setBufferSize(DEFAULT_BUFFER_SIZE);
+        response.setHeader("Content-Disposition", disposition + ";filename=\"" + fileName + "\"");
+        response.setHeader("Accept-Ranges", "bytes");
+        response.setHeader("ETag", eTag);
+        response.setDateHeader("Last-Modified", lastModified);
+        response.setDateHeader("Expires", expires);
+
+
+        // Send requested file (part(s)) to client ------------------------------------------------
+
+        // Prepare streams.
+        RandomAccessFile input = null;
+        OutputStream output = null;
+
+        try {
+            // Open streams.
+            input = new RandomAccessFile(file, "r");
+            output = response.getOutputStream();
+
+            if (ranges.isEmpty() || ranges.get(0) == full) {
+
+                // Return full file.
+                Range r = full;
+                response.setContentType(contentType);
+                response.setHeader("Content-Range", "bytes " + r.start + "-" + r.end + "/" + r.total);
+
+                if (content) {
+                    if (acceptsGzip) {
+                        // The browser accepts GZIP, so GZIP the content.
+                        response.setHeader("Content-Encoding", "gzip");
+                        output = new GZIPOutputStream(output, DEFAULT_BUFFER_SIZE);
+                    } else {
+                        // Content length is not directly predictable in case of GZIP.
+                        // So only add it if there is no means of GZIP, else browser will hang.
+                        response.setHeader("Content-Length", String.valueOf(r.length));
+                    }
+
+                    // Copy full range.
+                    copy(input, output, r.start, r.length);
+                }
+
+            } else if (ranges.size() == 1) {
+
+                // Return single part of file.
+                Range r = ranges.get(0);
+                response.setContentType(contentType);
+                response.setHeader("Content-Range", "bytes " + r.start + "-" + r.end + "/" + r.total);
+                response.setHeader("Content-Length", String.valueOf(r.length));
+                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206.
+
+                if (content) {
+                    // Copy single part range.
+                    copy(input, output, r.start, r.length);
+                }
+
+            } else {
+
+                // Return multiple parts of file.
+                response.setContentType("multipart/byteranges; boundary=" + MULTIPART_BOUNDARY);
+                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206.
+
+                if (content) {
+                    // Cast back to ServletOutputStream to get the easy println methods.
+                    ServletOutputStream sos = (ServletOutputStream) output;
+
+                    // Copy multi part range.
+                    for (Range r : ranges) {
+                        // Add multipart boundary and header fields for every range.
+                        sos.println();
+                        sos.println("--" + MULTIPART_BOUNDARY);
+                        sos.println("Content-Type: " + contentType);
+                        sos.println("Content-Range: bytes " + r.start + "-" + r.end + "/" + r.total);
+
+                        // Copy single part range of multi part range.
+						copy(input, output, r.start, r.length);
+						
+                    }
+
+                    // End with multipart boundary.
+                    sos.println();
+                    sos.println("--" + MULTIPART_BOUNDARY + "--");
+                }
+            }
+        } finally {
+            // Gently close streams.
+            close(output);
+            close(input);
+        }
+	}
+      
+
+      /**
+       * Returns true if the given accept header accepts the given value.
+       * @param acceptHeader The accept header.
+       * @param toAccept The value to be accepted.
+       * @return True if the given accept header accepts the given value.
+       */
+      private static boolean accepts(String acceptHeader, String toAccept) {
+          String[] acceptValues = acceptHeader.split("\\s*(,|;)\\s*");
+          Arrays.sort(acceptValues);
+          return Arrays.binarySearch(acceptValues, toAccept) > -1
+              || Arrays.binarySearch(acceptValues, toAccept.replaceAll("/.*$", "/*")) > -1
+              || Arrays.binarySearch(acceptValues, "*/*") > -1;
+      }
+
+      /**
+       * Returns true if the given match header matches the given value.
+       * @param matchHeader The match header.
+       * @param toMatch The value to be matched.
+       * @return True if the given match header matches the given value.
+       */
+      private static boolean matches(String matchHeader, String toMatch) {
+          String[] matchValues = matchHeader.split("\\s*,\\s*");
+          Arrays.sort(matchValues);
+          return Arrays.binarySearch(matchValues, toMatch) > -1
+              || Arrays.binarySearch(matchValues, "*") > -1;
+      }
+
+      /**
+       * Returns a substring of the given string value from the given begin index to the given end
+       * index as a long. If the substring is empty, then -1 will be returned
+       * @param value The string value to return a substring as long for.
+       * @param beginIndex The begin index of the substring to be returned as long.
+       * @param endIndex The end index of the substring to be returned as long.
+       * @return A substring of the given string value as long or -1 if substring is empty.
+       */
+      private static long sublong(String value, int beginIndex, int endIndex) {
+          String substring = value.substring(beginIndex, endIndex);
+          return (substring.length() > 0) ? Long.parseLong(substring) : -1;
+      }
+      
+      
+      /**
+       * Copy the given byte range of the given input to the given output.
+       * @param input The input to copy the given range to the given output for.
+       * @param output The output to copy the given range from the given input for.
+       * @param start Start of the byte range.
+       * @param length Length of the byte range.
+       * @throws IOException If something fails at I/O level.
+       */
+      private static void copy(RandomAccessFile input, OutputStream output, long start, long length)
+      {
+          try {
+			byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+			  int read;
+
+			  if (input.length() == length) {
+			      // Write full range.
+			      while ((read = input.read(buffer)) > 0) {
+			          output.write(buffer, 0, read);
+			      }
+			  } else {
+			      // Write partial range.
+			      input.seek(start);
+			      long toRead = length;
+
+			      while ((read = input.read(buffer)) > 0) {
+			          if ((toRead -= read) > 0) {
+			              output.write(buffer, 0, read);
+			          } else {
+			              output.write(buffer, 0, (int) toRead + read);
+			              break;
+			          }
+			      }
+			  }
+          } catch (Exception e) {
+				_logger.error("Error while copying file to output stream : "+e.toString());
+			}
+      }
+      
+      
+      private static void close(Closeable resource) {
+          if (resource != null) {
+              try {
+                  resource.close();
+              } catch (IOException ie) {
+            	  _logger.error(ie.getMessage());
+              }
+          }
+      }
+
+     
+      
+      public static Date parseUTCDate(String strDate) throws ParseException  {
+        String DATE_FORMAT = "MM/dd/yyyy hh:mm:ss a";
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
+        format.setTimeZone (TimeZone.getTimeZone("UTC"));
+        return format.parse (strDate);
+      }
+      
+      public static String formatUTCDate(Date date) {
+        String DATE_FORMAT = "MM/dd/yyyy hh:mm:ss a";
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
+        format.setTimeZone (TimeZone.getTimeZone("UTC"));
+        return format.format (date);
+      }
+      
+      private static class Range 
+      { 
+    	  long start;
+          long end;
+          long length;
+          long total;
+
+          /**
+           * Construct a byte range.
+           * @param start Start of the byte range.
+           * @param end End of the byte range.
+           * @param total Total length of the byte source.
+           */
+          public Range(long start, long end, long total) {
+              this.start = start;
+              this.end = end;
+              this.length = end - start + 1;
+              this.total = total;
+          }
+      } 
+      
+      /*
+      
+      private final static String RANGE_BOUNDARY = "<q1w2e3r4t5y6u7i8o9p0zaxscdvfbgnhmjklkl>";
+      private final static String MULTIPART_CONTENT_TYPE = "multipart/byteranges; boundary=<q1w2e3r4t5y6u7i8o9p0zaxscdvfbgnhmjklkl>"; 
+      private final static String MULTIPART_RANGE_DELIMITER = "--<q1w2e3r4t5y6u7i8o9p0zaxscdvfbgnhmjklkl>\r\n"; 
+      private final static String MULTIPART_RANGE_END = "--<q1w2e3r4t5y6u7i8o9p0zaxscdvfbgnhmjklkl>--\r\n\r\n";
+      private final static String CONTENT_RANGE_FORMAT = "bytes %s-%s/%s"; 
+      private final static int MAX_RANGE_ALLOWED = 5;
+      private final static int ERROR_ACCESS_DENIED = 5;
+      
+      
+      private static String FormatHttpDateTime(Date dt) 
+      {
+          return formatUTCDate (dt);
+      }
+      
+      private static class ByteRange 
+      { 
+        private long offset; 
+        private long length;
+        
+        public long getOffset () {
+          return offset;
+        }
+        public void setOffset (long offset) {
+          this.offset = offset;
+        }
+        public long getLength () {
+          return length;
+        }
+        public void setLength (long length) {
+          this.length = length;
+        }
+      } 
+      
+      
+    
+      private static class ReferenceArgument {
+        private int startIndex;
+        private long result;
+        private long offset;
+        private boolean isSatisfiable;
+        private long length;
+        public int getStartIndex () {
+          return startIndex;
+        }
+        public void setStartIndex (int startIndex) {
+          this.startIndex = startIndex;
+        }
+        public long getResult () {
+          return result;
+        }
+        public void setResult (long result) {
+          this.result = result;
+        }
+        public long getOffset () {
+          return offset;
+        }
+        public void setOffset (long offset) {
+          this.offset = offset;
+        }
+        public boolean isSatisfiable () {
+          return isSatisfiable;
+        }
+        public void setSatisfiable (boolean isSatisfiable) {
+          this.isSatisfiable = isSatisfiable;
+        }
+        public long getLength () {
+          return length;
+        }
+        public void setLength (long length) {
+          this.length = length;
+        }
+        public void incrementStartIndex() {
+          this.startIndex++;
+        }
+      }
+      
+       // initial space characters are skipped, and the String of digits up until the first non-digit
       // are converted to a long.  If digits are found the method returns true; otherwise false. 
-      private static boolean GetLongFromSubstring(String s, ReferenceArgument refArg) 
+      /*private static boolean GetLongFromSubstring(String s, ReferenceArgument refArg) 
       {
           refArg.setResult (0);
 
@@ -201,7 +729,7 @@ public class StaticFileHandler3
       // Range header must be ignored.  If the function returns true, then the byte range specifier will be converted to 
       // an offset and length, and the startIndex will be incremented to the next byte range specifier.  The byte range
       // specifier (offset and length) returned by this function is satisfiable if and only if isSatisfiable is true. 
-      private static boolean GetNextRange(String rangeHeader, long fileLength, ReferenceArgument refArg) 
+      /*private static boolean GetNextRange(String rangeHeader, long fileLength, ReferenceArgument refArg) 
       {
           // startIndex is first char after '=', or first char after ','
           // Debug.Assert(startIndex < rangeHeader.Length, "startIndex < rangeHeader.Length"); 
@@ -324,10 +852,10 @@ public class StaticFileHandler3
           return true; 
       }
 
-    /*  private static boolean IsSecurityError(int ErrorCode) 
+      private static boolean IsSecurityError(int ErrorCode) 
       { 
           return(ErrorCode == ERROR_ACCESS_DENIED);
-      } */
+      } 
 
       private static void MovePastSpaceCharacters(String s, ReferenceArgument refArg) 
       {
@@ -515,272 +1043,34 @@ public class StaticFileHandler3
       }
 
 
-      /// <summary>
-      /// Sets the caching used for resources on the http response cache policy.
-      /// </summary>
-      //TODO mpatel - This method is commented because we are not implementing caching for now.(As per discussion with Shiva)
-      /*private static void SetCachingPolicy(HttpCachePolicy cachePolicy)
-      {
-          cachePolicy.SetCacheability(HttpCacheability.ServerAndPrivate);
-          cachePolicy.SetNoServerCaching();
-          cachePolicy.SetMaxAge(TimeSpan.FromMinutes(5));
-
-//           NOTE: The two calls below prevent resources from being stored on 
-//             disk but they also set the expiration to be immediate. Which means 
-//             that if we preload images (e.x., grid) then the next time they are 
-//             requested they will again go back to the server. So we cannot use these. 
-          // cachePolicy.SetNoStore();
-          // cachePolicy.SetCacheability(HttpCacheability.NoCache);
-      }*/
 
       private static void SendBadRequest(HttpServletResponse response) throws IOException 
       { 
           response.setStatus(400);
           response.getWriter ().write("<html><body>Bad Request</body></html>");
       }
-
       
-      public static void ProcessRequestInternal(HttpServletRequest request, HttpServletResponse response, String pathOverride) throws TDSHttpException, IOException 
-      { 
-          String physicalPath; 
-          File fileInfo;
-          long fileLength; 
-          Date lastModifiedInUtc; 
-          String etag;
-          String rangeHeader; 
-          if (pathOverride != null)
-          {
-              physicalPath = pathOverride;
-          }
-          else
-          {
-              physicalPath = TDSHttpUtils.getCompleteRequestURL (request);
-          }
-           _Ref<String> physicalPathRef = new _Ref<String> (physicalPath);
-          try
-          {
-              fileInfo = GetFileInfo(physicalPathRef);
-              physicalPath = physicalPathRef.get ();
-          }
-          catch (TDSHttpException hex)
-          {
-            _logger.error (hex.getMessage (),hex);
-              int httpCode = hex.getHttpStatusCode ();
-              String httpError = String.format("%s (%s)", hex.getMessage (), physicalPath);
-              throw new TDSHttpException(httpCode, httpError);
-          }
-
-          // Determine Last Modified Time.  We might need it soon 
-          // if we encounter a Range: and If-Range header
-          // Using UTC time to avoid daylight savings time bug 83230 
-          Calendar lastModifiedCal = Calendar.getInstance ();
-          lastModifiedCal.setTimeInMillis (fileInfo.lastModified ());
-          lastModifiedInUtc = lastModifiedCal.getTime ();
-              
-
-          // Because we can't set a "Last-Modified" header to any time 
-          // in the future, check the last modified time and set it to
-          // Date.Now if it's in the future. 
-          // This is to fix VSWhidbey #402323
-          Date utcNow = new Date();
-          if (lastModifiedInUtc.after (utcNow)) 
-          {
-              // use 1 second resolution 
-            //TODO mpatel - Talk to Shiva on how to implement following
-//              lastModifiedInUtc = new Date(utcNow.Ticks - (utcNow.Ticks % TimeSpan.TicksPerSecond), DateTimeKind.Utc);
-          } 
-
-          etag = GenerateETag(lastModifiedInUtc, utcNow);
-          fileLength = fileInfo.length (); 
-
-          // is this a Range request?
-          rangeHeader = request.getHeader("Range");
-          if (rangeHeader != null && rangeHeader.toLowerCase ().startsWith("bytes") && 
-              ProcessRangeRequest(request,response, physicalPath, fileLength, rangeHeader, etag, lastModifiedInUtc)) 
-          {
-              return;
-          }
-
-          // if we get this far, we're sending the entire file
-          SendFile(physicalPath, 0, fileLength, fileLength, response); 
-
-          
-          // We want to flush cache entry when static file has changed
-//          response.AddFileDependency(physicalPath); 
-          
-          // set cache headers
-          //TODO mpatel - Not doing caching for now as per discussion with Shiva
-          /*HttpCachePolicy cachePolicy = response.Cache;
-          SetCachingPolicy(cachePolicy);
-
-          // set cache file info
-          cachePolicy.SetETag(etag);
-          cachePolicy.SetLastModified(lastModifiedInUtc);*/
-      }
-      
-      private static void SendRangeNotSatisfiable(HttpServletResponse response, long fileLength) 
+      private static boolean IsOutDated(String ifRangeHeader, Date lastModified) 
       {
-          response.setStatus(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE.value ()); //416 - REQUESTED_RANGE_NOT_SATISFIABLE
-          response.setContentType(null); 
-          response.addHeader("Content-Range", "bytes */" + fileLength);
-      } 
-
-      private static void SendFile(String physicalPath, long offset, long length, long fileLength, HttpServletResponse response) throws TDSHttpException
-      {
-              // When not hosted on IIS, TransmitFile sends bytes in memory similar to WriteFile 
-              // HttpRuntime.CheckFilePermission(physicalPath);
+          try 
+          { 
+            Calendar lastModifiedCal  = Calendar.getInstance ();
+            lastModifiedCal.setTime (lastModified);
+            lastModifiedCal.setTimeZone (TimeZone.getTimeZone ("UTC"));
+            Date utcLastModified = lastModifiedCal.getTime ();
             
-            //TODO mpatel - Following dot net code is transmitting the file in offsets. So make sure to come up with similar implementation in java
-//              response.TransmitFile(physicalPath, offset, length); 
-              
-              
-              //TODO mpatel- Following is the java way of sending entire file to response stream - Temp Fix Sending whole file as response stream rather than in offset 
-              int DEFAULT_BUFFER_SIZE = 10240;
-              
-              // Init servlet response.
-//              String preserveContentType = response.getContentType();
-              
-              response.reset();
-              response.setBufferSize(DEFAULT_BUFFER_SIZE);
-              response.setHeader("Content-Length", String.valueOf(fileLength));
-              response.setDateHeader("Expires", System.currentTimeMillis()+1000*5*60);
-//              response.setContentType(preserveContentType); 
-              String contentRange = String.format(CONTENT_RANGE_FORMAT, offset, offset + length - 1, fileLength);
-              response.addHeader("Content-Range", contentRange);
-              
-              // Specify content type. Use extension to do the mapping
-              response.setContentType (MimeMapping.getMapping(physicalPath)); 
-              // Static file handler supports byte ranges
-              response.addHeader("Accept-Ranges", "bytes");
-              
-              //Required for Firefox 3.6 versions
-              response.setStatus(HttpStatus.PARTIAL_CONTENT.value()); //set the status to 206
-              
-              BufferedInputStream input = null;
-              BufferedOutputStream output = null;
-  
-              try {
-                  // Open streams.
-                  File file = new File(physicalPath);
-                  input = new BufferedInputStream(new FileInputStream(file), DEFAULT_BUFFER_SIZE);
-                  output = new BufferedOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE);
-  
-                  // Write file contents to response.
-                  byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-                  int inputLength;
-                  
-                  input.skip(offset); //skip on requests for portions of bytes. Required for Firefox 3.6
-                  
-                  while ((inputLength = input.read(buffer)) > 0) {
-                      output.write(buffer, 0, inputLength);
-                  }
-              } 
-              catch(Exception e) {
-                _logger.error (e.getMessage (),e);
-                // Check for ERROR_ACCESS_DENIED and set the HTTP 
-                // status such that the auth modules do their thing
-//                if (IsSecurityError(e.ErrorCode)) 
-                {
-                    throw new TDSHttpException(HttpStatus.UNAUTHORIZED.value (),"Resource_access_forbidden : "+physicalPath); 
-                }
-//                throw e; 
-              }
-              finally {
-                  // Gently close streams.
-                  close(output);
-                  close(input);
-              }
-              
+            Date utc = parseUTCDate(ifRangeHeader);
+            
+            
+            return (utc.before (utcLastModified));
+          } 
+          catch (Exception e)
+          {
+            _logger.error (e.getMessage (),e);
+              return true; 
+          } 
       }
-      
-      private static void close(Closeable resource) {
-        if (resource != null) {
-            try {
-                resource.close();
-            } catch (IOException e) {
-              _logger.error (e.getMessage (),e);
-                // Do your thing with the exception. Print it, log it or mail it.
-                e.printStackTrace();
-            }
-        }
-    }
 
-      private static String FormatHttpDateTime(Date dt) 
-      {
-          return formatUTCDate (dt);
-      }
+      */
       
-      public static Date parseUTCDate(String strDate) throws ParseException  {
-        String DATE_FORMAT = "MM/dd/yyyy hh:mm:ss a";
-        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-        format.setTimeZone (TimeZone.getTimeZone("UTC"));
-        return format.parse (strDate);
-      }
-      
-      public static String formatUTCDate(Date date) {
-        String DATE_FORMAT = "MM/dd/yyyy hh:mm:ss a";
-        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-        format.setTimeZone (TimeZone.getTimeZone("UTC"));
-        return format.format (date);
-      }
-      
-      private static class ByteRange 
-      { 
-        private long offset; 
-        private long length;
-        
-        public long getOffset () {
-          return offset;
-        }
-        public void setOffset (long offset) {
-          this.offset = offset;
-        }
-        public long getLength () {
-          return length;
-        }
-        public void setLength (long length) {
-          this.length = length;
-        }
-      } 
-      
-      private static class ReferenceArgument {
-        private int startIndex;
-        private long result;
-        private long offset;
-        private boolean isSatisfiable;
-        private long length;
-        public int getStartIndex () {
-          return startIndex;
-        }
-        public void setStartIndex (int startIndex) {
-          this.startIndex = startIndex;
-        }
-        public long getResult () {
-          return result;
-        }
-        public void setResult (long result) {
-          this.result = result;
-        }
-        public long getOffset () {
-          return offset;
-        }
-        public void setOffset (long offset) {
-          this.offset = offset;
-        }
-        public boolean isSatisfiable () {
-          return isSatisfiable;
-        }
-        public void setSatisfiable (boolean isSatisfiable) {
-          this.isSatisfiable = isSatisfiable;
-        }
-        public long getLength () {
-          return length;
-        }
-        public void setLength (long length) {
-          this.length = length;
-        }
-        public void incrementStartIndex() {
-          this.startIndex++;
-        }
-      }
 }
