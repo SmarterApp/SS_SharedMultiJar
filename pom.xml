@@ -268,26 +268,6 @@
 				<version>${tds-dll.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>org.opentestsystem.delivery</groupId>
-				<artifactId>tds-load-test-lib</artifactId>
-				<version>${tds-shared.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.opentestsystem.delivery</groupId>
-				<artifactId>tds-load-test-api</artifactId>
-				<version>${tds-shared.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.opentestsystem.delivery</groupId>
-				<artifactId>tds-load-test</artifactId>
-				<version>${tds-shared.version}</version>
-			</dependency>
-
-
-
 
 			<!-- start JDOM for xml processing -->
 			<dependency>
