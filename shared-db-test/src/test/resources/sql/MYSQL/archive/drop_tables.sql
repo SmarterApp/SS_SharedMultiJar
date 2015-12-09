@@ -1,0 +1,13 @@
+drop table if exists `_dblatencyreports`;
+drop table if exists `_dblatencyarchive`;
+drop table if exists `_dblatency`;
+drop table if exists `testopportunityscores_audit`;
+drop table if exists `systemerrorsarchive`;
+drop table if exists `systemerrors`;
+drop table if exists `systemclient`;
+drop table if exists `sessionaudit`;
+drop table if exists `serverlatencyarchive`;
+drop table if exists `serverlatency`;
+drop table if exists `opportunityclient`;
+drop table if exists `opportunityaudit`;
+drop table if exists `auditaccommodations`;

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <statuscodes usage="opportunity" status="suspended" description="an existing opportunity is waiting for proctor approval to restart" stage="inuse" _key="DE4av3pXSTmEILu1fsckkQ=="/>
+  <statuscodes usage="opportunity" status="scored" description="completed test has been scored" stage="closed" _key="Hbcvt1ZOSKuZAbpR0OMbLg=="/>
+  <statuscodes usage="opportunity" status="reported" description="test scores have been reported to reporting system" stage="closed" _key="JZJ0M6V6SbKZVu0m84SQuQ=="/>
+  <statuscodes usage="session " status="closed" description="the session is closed for business" stage="closed" _key="NDOMBf6MQeezsMezfD8WDg=="/>
+  <statuscodes usage="session" status="open" description="the session is open for business" stage="open" _key="PafLBpAhTP+Ezvjfhi8T/w=="/>
+  <statuscodes usage="opportunity" status="approved" description="opportunity has been approved for start/restart by proctor" stage="inuse" _key="alaaj6hQSsOjbjThlg1uyg=="/>
+  <statuscodes usage="opportunity" status="paused" description="opportunity has been put on hold by the user" stage="inactive" _key="dVIDQFlOSDWLN8ZLNvFzVA=="/>
+  <statuscodes usage="opportunity" status="pending" description="a new opportunity is waiting for proctor approval" stage="inuse" _key="ky5zi3KDS2qA/S5Jn1uqqA=="/>
+  <statuscodes usage="opportunity" status="expired" description="incomplete test has expired" stage="closed" _key="l3u0skcnSiOaw6GvDp4zlA=="/>
+  <statuscodes usage="opportunity" status="segmentExit" description="request to leave a segment" stage="inuse" _key="pf7tXsIWQ1u9E5hnerSjyQ=="/>
+  <statuscodes usage="opportunity" status="denied" description="opportunity start was denied by the proctor" stage="inactive" _key="pqAPALDdTDacCTB0VvSnaw=="/>
+  <statuscodes usage="opportunity" status="segmentEntry" description="request to enter a segment" stage="inuse" _key="sGteJTHBQ3m2xtsF3MMjFw=="/>
+  <statuscodes usage="opportunity" status="review" description="testee is reviewing completed test items" stage="inuse" _key="tUq8Bz2jTiyWazPGG6GqiA=="/>
+  <statuscodes usage="opportunity" status="completed" description="test has been completed and submitted for scoring by testee" stage="closed" _key="txlZDc2jR++FZcJovtXSNA=="/>
+  <statuscodes usage="opportunity" status="submitted" description="test scores have been submitted to QA" stage="closed" _key="zEwVUmezSLGfO4WmXGRCjQ=="/>
+  <statuscodes usage="opportunity" status="rescored" description="the opportunity was rescored" stage="closed" _key="zpd6GPZFSHGcGQPev2d29Q=="/>
+  <statuscodes usage="opportunity" status="invalidated" description="test results have been invalidated" stage="closed" _key="32fiCAIPQhWC/8KoCEf8JQ=="/>
+  <statuscodes usage="opportunity" status="started" description="opportunity is in use" stage="inuse" _key="+JdPJSN/QCektPSZOvHT+g=="/>
+</dataset>

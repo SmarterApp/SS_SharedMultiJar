@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	                    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	                    
+	<!-- Import the test context definition -->
+	<import resource="classpath:opentestsystem.shared.test-context-module.xml"/>
+
+	<bean id="alice" class="org.opentestsystem.shared.test.interactiveuser.InteractiveUserImpl"/>
+	
+	<bean id="google" class="org.opentestsystem.shared.test.webapplication.BaseWebApplication">
+		<property name="indexUrl" value="http://www.google.com"/>
+	</bean>
+
+</beans>

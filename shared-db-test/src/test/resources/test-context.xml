@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	                    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+    
+	<import resource="classpath:no-lifecycle-test-db-context-module.xml"/>
+
+	<util:properties id="masterDataSourceProperties">
+        <prop key="jdbcUrl">${jdbc.url}</prop> 
+ 		<prop key="user">${jdbc.userName}</prop>
+ 		<prop key="password">${jdbc.password}</prop> 
+ 	  	<prop key="driverClass">${jdbc.driverclass}</prop> 
+	</util:properties>
+	
+	<bean id="configsSchema" class="org.opentestsystem.unittest.db.DBSchemaDeployerImpl">
+		<property name="masterDataSourceProperties" ref="masterDataSourceProperties"/>
+		<property name="schemaDefinitionName" value="configs"/>
+		<property name="dbDialect" value="${DBDialect}"/>
+		<property name="dbName" value="${TDSConfigsDBName}"/>
+		<property name="additionalUrlParm" value = "${AdditionalUrlParm}" />
+	</bean>
+		
+	<bean id="itembankSchema" class="org.opentestsystem.unittest.db.DBSchemaDeployerImpl">
+		<property name="masterDataSourceProperties" ref="masterDataSourceProperties"/>
+		<property name="schemaDefinitionName" value="itembank"/>
+		<property name="dbDialect" value="${DBDialect}"/>
+		<property name="dbName" value="${ItembankDBName}"/>
+		<property name="additionalUrlParm" value = "${AdditionalUrlParm}" />
+	</bean>
+
+	<bean id="archiveSchema" class="org.opentestsystem.unittest.db.DBSchemaDeployerImpl">
+		<property name="masterDataSourceProperties" ref="masterDataSourceProperties"/>
+		<property name="schemaDefinitionName" value="archive"/>
+		<property name="dbDialect" value="${DBDialect}"/>
+		<property name="dbName" value="${TDSArchiveDBName}"/>
+		<property name="additionalUrlParm" value = "${AdditionalUrlParm}" />
+	</bean>	
+	
+	<bean id="sessionSchema" class="org.opentestsystem.unittest.db.DBSchemaDeployerImpl">
+		<property name="masterDataSourceProperties" ref="masterDataSourceProperties"/>
+		<property name="schemaDefinitionName" value="session"/>
+		<property name="dbDialect" value="${DBDialect}"/>
+		<property name="dbName" value="${TDSSessionDBName}"/>
+		<property name="additionalUrlParm" value = "${AdditionalUrlParm}"  />
+	</bean>
+	
+	<!-- Configure database access -->
+	<!-- This file sets the default connection parameters. To override, create a properties file "opentestsystem-test-override-properties.xml"
+	in your user home directory (C:\Users\my_name) -->
+	  
+	<context:property-placeholder
+		location="test-default-properties.xml"
+		order="900"
+		ignore-unresolvable="true"
+	/>
+	
+	
+<!-- 	<bean id="abstractConnectionManager" class="AIR.Common.DB.AbstractConnectionManager"> -->
+<!-- 		<property name="databaseDialect" value="MYSQL"/> -->
+<!-- 		<property name="dataSource" ref="applicationDataSource"/> -->
+<!-- 	</bean> -->
+	
+<!--  	<bean id="applicationDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">  -->
+<!--  		<property name="jdbcUrl"     value="jdbc:mysql://db-dev.opentestsystem.org:3306/tdscore_dev_session2012_sandbox?useServerPrepStmts=false&amp;rewriteBatchedStatements=true"/>  -->
+<!--  		<property name="user"        value="dbsbac"/>  -->
+<!--  		<property name="password"    value="osTyMhRM1C"/>  -->
+<!--  		<property name="driverClass" value="com.mysql.jdbc.Driver"/>  -->
+<!--  	</bean> -->
+
+<!-- 	<bean id="applicationDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close"> -->
+<!-- 		<property name="jdbcUrl"     value="jdbc:sqlserver://38.118.82.146;DatabaseName=TDSCore_Dev_Session2012_Sandbox"/>  -->
+<!--  		<property name="user"        value="dbtds"/> -->
+<!-- 		<property name="password"    value="KOJ89238876234rUHJ"/>  -->
+<!-- 	</bean> -->
+	
+</beans>

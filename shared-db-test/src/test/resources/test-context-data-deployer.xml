@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	                    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<import resource="test-context.xml"/>
+
+	<bean id="configsData" class="org.opentestsystem.unittest.db.DBDataDeployerImpl">
+		<property name="dataSource" ref="configsSchema"/>
+		<property name="dataDefinitionName" value="configs"/>
+		<property name="importFileName" value="${configsDataFileName}"/>
+	</bean>
+	
+	<bean id="sessionData" class="org.opentestsystem.unittest.db.DBDataDeployerImpl">
+		<property name="dataSource" ref="sessionSchema"/>
+		<property name="dataDefinitionName" value="session"/>
+		<property name="importFileName" value="${sessionDataFileName}"/>
+	</bean>
+	
+	<bean id="itembankData" class="org.opentestsystem.unittest.db.DBDataDeployerImpl">
+		<property name="dataSource" ref="itembankSchema"/>
+		<property name="dataDefinitionName" value="itembank"/>
+		<property name="importFileName" value="${itembankDataFileName}"/>
+	</bean>
+	
+	<bean id="configsConnectionManager" class="AIR.Common.DB.RollbackConnectionManager">
+		<property name="databaseDialect" value="${DBDialect}"/>
+		<property name="dataSource" ref="configsSchema"/>
+	</bean>
+	
+	<bean id="sessionConnectionManager" class="AIR.Common.DB.RollbackConnectionManager">
+		<property name="databaseDialect" value="${DBDialect}"/>
+		<property name="dataSource" ref="sessionSchema"/>
+	</bean>
+</beans>
