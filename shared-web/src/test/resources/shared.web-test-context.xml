@@ -10,6 +10,17 @@
 	<import resource="classpath:opentestsystem.shared.common-context-module.xml"/>
 	<import resource="classpath:opentestsystem.shared.common-common-context-module.xml"/>
 	
+	<bean factory-bean="appSettings"
+	      factory-method="updateProperties"
+	      lazy-init="false"> 
+		<constructor-arg>
+			<util:map map-class="java.util.HashMap">
+				<entry key="EncryptionKey" value="testKey1234567891234567891234" />
+			</util:map>
+		</constructor-arg>
+	</bean>
+	
+	
 	<bean id="iEncryption" class="TDS.Shared.Web.Encryption" primary="true"/>
 	
 	<bean id="iEncryptionJce" class="TDS.Shared.Web.Encryption">
