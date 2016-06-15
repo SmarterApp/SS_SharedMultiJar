@@ -201,7 +201,7 @@ public class StaticFileHandler3
           }
 
           // if we get this far, we're sending the entire file
-          SendFile(physicalPath, 0, fileLength, fileLength, response); 
+          SendFile(physicalPath, response);
           
       }
       
@@ -212,7 +212,7 @@ public class StaticFileHandler3
           response.addHeader("Content-Range", "bytes */" + fileLength);
       } 
 
-      private static void SendFile(String physicalPath, long offset, long length, long fileLength, HttpServletResponse response) throws TDSHttpException
+      private static void SendFile(String physicalPath, HttpServletResponse response) throws TDSHttpException
       {
     	  	
               File srcFile;
@@ -223,6 +223,12 @@ public class StaticFileHandler3
 			}
               try {
 				byte[] bytes = java.nio.file.Files.readAllBytes(srcFile.toPath());
+
+                // In order to display SVG files in an <img> tag, the browser needs to know the content type, where this isn't needed for other types
+                if (physicalPath != null && physicalPath.toLowerCase().endsWith(".svg")) {
+                    response.setHeader("Content-Type", "image/svg+xml");
+                }
+
 				response.getOutputStream().write(bytes);
 			}  catch (IOException e) {
 				_logger.error("Error while writing file to response output stream:: ",e);

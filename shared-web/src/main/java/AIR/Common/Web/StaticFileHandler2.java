@@ -88,6 +88,11 @@ public class StaticFileHandler2
         response.reset();
         response.setBufferSize(num);
         response.setHeader("Content-Length", String.valueOf(fileSize));
+
+        // In order to display SVG files in an <img> tag, the browser needs to know the content type, where this isn't needed for other types
+        if (fileName != null && fileName.toLowerCase().endsWith(".svg")) {
+            response.setHeader("Content-Type", "image/svg+xml");
+        }
       
         BufferedInputStream input = null;
         BufferedOutputStream output = null;

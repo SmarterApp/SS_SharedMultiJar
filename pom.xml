@@ -23,7 +23,7 @@
 
 
 		<!--NOTE: this should be set to the non snapshot version i.e. if this pom's 
-			version is 1.0, the property should be set to 1.0 -->
+			version is 1.0-SNAPSHOT, the property should be set to 1.0 -->
 		<shared-quality-config.version>0.0.4</shared-quality-config.version>
 
 		<!-- Spring -->
