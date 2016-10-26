@@ -26,12 +26,17 @@ public class DataBaseTable
   private Map<String, TableColumnType> _columnInfo     = new HashMap<String, TableColumnType> ();
   private SQLConnection                _connection     = null;
   private DATABASE_TYPE                _dbType         = null;
+  private String                       _creationSql    = null;
 
   public DataBaseTable (String name, DATABASE_TYPE dbType) {
     // create unique table name. Dashes are not allowed in tbl names.
     _tableName = String.format ("%s%s", name, UUID.randomUUID ().toString ().replace ('-', 'z'));
     this._IsOnDisk = true;
     this._dbType = dbType;
+  }
+
+  public String getTableCreationSql() {
+    return _creationSql;
   }
 
   public String generateInsertColumnsNamesStatement () {
@@ -245,6 +250,8 @@ public class DataBaseTable
       st.executeUpdate (sqlCommand.toString ());
       // there was no exception.
       _tableName = finalTableName;
+
+      _creationSql = sqlCommand.toString();
     }
   }
 }
