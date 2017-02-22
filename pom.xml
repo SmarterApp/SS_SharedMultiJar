@@ -24,7 +24,7 @@
 
 		<!--NOTE: this should be set to the non snapshot version i.e. if this pom's 
 			version is 1.0-SNAPSHOT, the property should be set to 1.0 -->
-		<shared-quality-config.version>0.0.4-SNAPSHOT</shared-quality-config.version>
+		<shared-quality-config.version>0.0.4</shared-quality-config.version>
 
 		<!-- Spring -->
 		<spring.version>3.2.1.RELEASE</spring.version>
@@ -110,7 +110,7 @@
 		<woodstox.version>4.4.0</woodstox.version>
 
 		<!-- Default versions for TDS projects -->
-		<tds-shared.version>1.0.1-BUILD-SNAPSHOT</tds-shared.version>
+		<tds-shared.version>1.0.1</tds-shared.version>
 		<tds-dll.version>0.0.1-SNAPSHOT</tds-dll.version>
 
 	</properties>
