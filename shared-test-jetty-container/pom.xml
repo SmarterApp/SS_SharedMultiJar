@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>shared-test-jetty-container</artifactId>
-	<name>Test support utilities</name>
+	<name>Test support utilities - jetty container</name>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -31,13 +31,6 @@
 			<artifactId>spring-webmvc</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>2.10.0</version>
-			<scope>test</scope>
-		</dependency>
-				
 		
         <dependency>
         	<groupId>org.eclipse.jetty</groupId>
