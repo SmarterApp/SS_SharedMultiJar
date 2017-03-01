@@ -5,7 +5,7 @@
 	<groupId>org.opentestsystem.shared</groupId>
 	<artifactId>shared-master</artifactId>
 	<name>Master POM for open test system shared modules</name>
-	<version>1.0.1-BUILD-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -20,11 +20,6 @@
 		<log4j.xml.SpringLogLevel>warn</log4j.xml.SpringLogLevel>
 		<log4j.xml.AppLogLevel>info</log4j.xml.AppLogLevel>
 		<log4j.xml.RootLogLevel>info</log4j.xml.RootLogLevel>
-
-
-		<!--NOTE: this should be set to the non snapshot version i.e. if this pom's 
-			version is 1.0-SNAPSHOT, the property should be set to 1.0 -->
-		<shared-quality-config.version>0.0.4-SNAPSHOT</shared-quality-config.version>
 
 		<!-- Spring -->
 		<spring.version>3.2.1.RELEASE</spring.version>
@@ -108,11 +103,6 @@
 		<slf4j.version>1.7.2</slf4j.version>
 		<xmlunit.version>1.5</xmlunit.version>
 		<woodstox.version>4.4.0</woodstox.version>
-
-		<!-- Default versions for TDS projects -->
-		<tds-shared.version>1.0.1-BUILD-SNAPSHOT</tds-shared.version>
-		<tds-dll.version>0.0.1-SNAPSHOT</tds-dll.version>
-
 	</properties>
 
 	<modules>
@@ -150,124 +140,92 @@
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-common</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-config</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-db</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-db-test</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test-jetty-container</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-security</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test-api</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-threading</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-tr-api</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-web</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-xml</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-json</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-mq</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-logging</artifactId>
-				<version>${tds-shared.version}</version>
+				<version>${project.version}</version>
 			</dependency>
-			
-			<!-- Default versions of TDS projects -->
-			<dependency>
-				<groupId>org.opentestsystem.delivery</groupId>
-				<artifactId>tds-dll-api</artifactId>
-				<version>${tds-dll.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.opentestsystem.delivery</groupId>
-				<artifactId>tds-dll-common</artifactId>
-				<version>${tds-dll.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.opentestsystem.delivery</groupId>
-				<artifactId>tds-dll-mysql</artifactId>
-				<version>${tds-dll.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.opentestsystem.delivery</groupId>
-				<artifactId>tds-dll-mssql</artifactId>
-				<version>${tds-dll.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.opentestsystem.delivery</groupId>
-				<artifactId>tds-dll-schemas</artifactId>
-				<version>${tds-dll.version}</version>
-			</dependency>
-
 
 			<!-- start JDOM for xml processing -->
 			<dependency>
@@ -276,7 +234,6 @@
 				<version>${jdom.version}</version>
 			</dependency>
 			<!-- end JDOM for xml processing -->
-
 
 			<!-- Spring -->
 			<dependency>
@@ -823,5 +780,20 @@
 			</plugin>
 		</plugins>
 	</reporting>
+
+	<scm>
+		<connection>scm:git:https://github.com/SmarterApp/SS_SharedMultiJar.git</connection>
+		<developerConnection>scm:git:git://github.com/SmarterApp/SS_SharedMultiJar.git</developerConnection>
+		<url>https://github.com/SmarterApp/SS_SharedMultiJar</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>central</id>
+			<name>airdev-releases</name>
+			<url>https://airdev.jfrog.io/airdev/libs-releases-local</url>
+		</repository>
+	</distributionManagement>
 	
 </project>
