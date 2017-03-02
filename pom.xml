@@ -4,7 +4,7 @@
 	<groupId>org.opentestsystem.shared</groupId>
 	<artifactId>shared-master</artifactId>
 	<name>Master POM for open test system shared modules</name>
-	<version>3.0.1-SNAPSHOT</version>
+	<version>3.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -141,91 +141,91 @@
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-common</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-config</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-db</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-db-test</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test-jetty-container</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-security</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test-api</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-threading</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-tr-api</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-web</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-xml</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-json</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-mq</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.1-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-logging</artifactId>
-				<version>${project.version}</version>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<!-- start JDOM for xml processing -->
