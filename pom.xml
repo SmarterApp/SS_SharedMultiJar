@@ -123,6 +123,7 @@
 		<!-- <module>shared-instrumentation</module> -->
 		<module>shared-log4j</module>
 		<module>shared-logging</module>
+		<module>shared-spring</module>
 	</modules>
 
 	<licenses>
