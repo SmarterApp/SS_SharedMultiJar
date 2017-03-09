@@ -46,7 +46,7 @@
 		<maven-source-plugin.version>2.2.1</maven-source-plugin.version>
 		<maven-surefire-plugin.version>2.13</maven-surefire-plugin.version>
 		<maven-surefire-report-plugin.version>2.13</maven-surefire-report-plugin.version>
-		<maven.toolchains.plugin.version>1.1</maven.toolchains.plugin.version>
+		<maven-toolchains-plugin.version>1.1</maven-toolchains-plugin.version>
 		<tomcat6-maven-plugin.version>2.0</tomcat6-maven-plugin.version>
 		<tomcat7-maven-plugin.version>2.0</tomcat7-maven-plugin.version>
 		<tomcat-maven-plugin.version>1.1</tomcat-maven-plugin.version>
@@ -740,12 +740,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>${maven.source.plugin.version}</version>
+					<version>${maven-source-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-toolchains-plugin</artifactId>
-					<version>${maven.toolchains.plugin.version}</version>
+					<version>${maven-toolchains-plugin.version}</version>
 					<executions>
 						<execution>
 							<goals>
