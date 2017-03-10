@@ -218,8 +218,8 @@
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
-				<artifactId>shared-mq</artifactId>
-				<version>3.0.1-SNAPSHOT</version>
+				<artifactId>shared-log4j</artifactId>
+				<version>3.0.2-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
