@@ -39,8 +39,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
 
     private void logRequest(final HttpRequest request, final byte[] body, final UUID traceId) {
         String bodyString = new String(body, Charsets.UTF_8);
-
-        MediaType contentType = request.getHeaders().getContentType();
+        final MediaType contentType = request.getHeaders().getContentType();
 
         if (!bodyString.isEmpty() && contentType.getSubtype().equals(CONTENT_TYPE_SUBTYPE_JSON)) {
             try {
@@ -51,12 +50,13 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
             }
         }
 
-        log.debug("=========================================* REQUEST *==========================================");
-        log.debug(" Trace ID    :   {}", traceId);
-        log.debug(" Method/URI  :   {} - {}", request.getMethod(), request.getURI());
-        log.debug(" Headers     :   {} ", request.getHeaders());
-        log.debug(" Body        :   {} ", bodyString);
-        log.debug("==============================================================================================");
+        log.debug("\n=========================================* REQUEST *========================================== \n" +
+                " Trace ID    :   {} \n" +
+                " Method/URI  :   {} - {} \n" +
+                " Headers     :   {} \n" +
+                " Body        :   {} \n" +
+                "==============================================================================================",
+            traceId, request.getMethod(), request.getURI(), request.getHeaders(), bodyString);
     }
 
     private void logResponse(final ClientHttpResponse response, final UUID traceId) throws IOException {
@@ -66,7 +66,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
             bodyString = CharStreams.toString(new InputStreamReader(in, Charsets.UTF_8));
         }
 
-        MediaType contentType = response.getHeaders().getContentType();
+        final MediaType contentType = response.getHeaders().getContentType();
 
         if (!bodyString.isEmpty() && contentType.getSubtype().equals(CONTENT_TYPE_SUBTYPE_JSON)) {
             try {
@@ -77,12 +77,13 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
             }
         }
 
-        log.debug("=========================================* RESPONSE *=========================================");
-        log.debug(" Trace ID    :   {}", traceId);
-        log.debug(" Status Code :   {}", response.getStatusCode());
-        log.debug(" Status Text :   {}", response.getStatusText());
-        log.debug(" Headers     :   {}", response.getHeaders());
-        log.debug(" Body        :   {}", bodyString);
-        log.debug("==============================================================================================");
+        log.debug("\n=========================================* RESPONSE *========================================= \n" +
+        " Trace ID    :   {} \n" +
+        " Status Code :   {} \n" +
+        " Status Text :   {} \n" +
+        " Headers     :   {} \n" +
+        " Body        :   {} \n" +
+        "==============================================================================================",
+            traceId, response.getStatusCode(), response.getStatusText(), response.getHeaders(), bodyString);
     }
 }

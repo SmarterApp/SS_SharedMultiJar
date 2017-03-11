@@ -32,15 +32,15 @@ public class WebConfiguration {
     @Bean(name = "integrationRestTemplate")
     public RestTemplate restTemplate() {
         // Jackson Converters
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        final MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(getIntegrationObjectMapper());
-        RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
-        List<HttpMessageConverter<?>> converters = new ArrayList<>();
+        final RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
+        final List<HttpMessageConverter<?>> converters = new ArrayList<>();
         converters.add(converter);
         restTemplate.setMessageConverters(converters);
 
         // Request/Response RestTemplate Logging
-        ClientHttpRequestInterceptor loggingInterceptor = new RestTemplateLoggingInterceptor(getIntegrationObjectMapper());
+        final ClientHttpRequestInterceptor loggingInterceptor = new RestTemplateLoggingInterceptor(getIntegrationObjectMapper());
         restTemplate.setInterceptors(Arrays.asList(loggingInterceptor));
 
         return restTemplate;
