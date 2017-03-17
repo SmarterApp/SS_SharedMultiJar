@@ -8,6 +8,8 @@ FROM tomcat:7-jre7
 # Removed server banner
 # Added Secure flag in cookie
 # Changed SHUTDOWN port and Command
+# Increased maxHttpHeaderSize to 65536
+# Set URIEncoding to UTF-8
 ADD server.xml /usr/local/tomcat/conf/
 
 #Put more secured web.xml
