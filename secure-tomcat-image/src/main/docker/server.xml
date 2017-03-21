@@ -73,8 +73,7 @@
                    URIEncoding="UTF-8"
                    connectionTimeout="20000"
                    redirectPort="8443"
-                   server=" "
-                   secure="true"/>
+                   server=" " />
         <!-- A "Connector" using the shared thread pool-->
         <!--
         <Connector executor="tomcatThreadPool"

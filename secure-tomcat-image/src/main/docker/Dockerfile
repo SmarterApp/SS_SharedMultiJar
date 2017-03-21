@@ -6,7 +6,6 @@ FROM tomcat:7-jre7
 
 #Put more secured server.xml
 # Removed server banner
-# Added Secure flag in cookie
 # Changed SHUTDOWN port and Command
 # Increased maxHttpHeaderSize to 65536
 # Set URIEncoding to UTF-8
