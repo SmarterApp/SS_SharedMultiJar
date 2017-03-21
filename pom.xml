@@ -230,6 +230,12 @@
 				<version>3.0.3-SNAPSHOT</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.opentestsystem.shared</groupId>
+				<artifactId>shared-spring</artifactId>
+				<version>3.0.3-SNAPSHOT</version>
+			</dependency>
+
 			<!-- start JDOM for xml processing -->
 			<dependency>
 				<groupId>org.jdom</groupId>
