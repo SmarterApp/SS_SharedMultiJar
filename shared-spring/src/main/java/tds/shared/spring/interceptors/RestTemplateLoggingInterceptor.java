@@ -80,7 +80,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
                 final Object json = objectMapper.readValue(bodyString, Object.class);
                 bodyString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
             } catch (IOException e) {
-                log.debug("Unable to parse the response as JSON. Printing raw response body string...", e);
+                log.debug("Unable to parse the response as JSON.", e);
             }
         }
 
