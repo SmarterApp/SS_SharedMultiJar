@@ -70,6 +70,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
         try (final InputStream in = response.getBody()) {
             bodyString = CharStreams.toString(new InputStreamReader(in, Charsets.UTF_8));
         } catch (IOException e) {
+            // An IOException will be thrown when the body is zero-length (e.g. a 404 response)
             log.debug("Unable to open response body", e);
         }
 
