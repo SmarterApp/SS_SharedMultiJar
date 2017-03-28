@@ -29,7 +29,9 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
     }
 
     @Override
-    public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, final ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
+    public ClientHttpResponse intercept(final HttpRequest request,
+                                        final byte[] body,
+                                        final ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
         final UUID traceId = UUID.randomUUID();
         logRequest(request, body, traceId);
         ClientHttpResponse response = clientHttpRequestExecution.execute(request, body);
@@ -46,7 +48,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
                 final Object json = objectMapper.readValue(bodyString, Object.class);
                 bodyString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
             } catch (IOException e) {
-                log.debug("Unable to parse the request as JSON. Printing raw request body string...");
+                log.debug("Unable to parse the request as JSON. Printing raw request body string...", e);
             }
         }
 
@@ -56,14 +58,20 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
                 " Headers     :   {} \n" +
                 " Body        :   {} \n" +
                 "==============================================================================================",
-            traceId, request.getMethod(), request.getURI(), request.getHeaders(), bodyString);
+            traceId,
+            request.getMethod(), request.getURI(),
+            request.getHeaders(),
+            bodyString.isEmpty() ? "<no body>" : bodyString);
     }
 
     private void logResponse(final ClientHttpResponse response, final UUID traceId) throws IOException {
-        String bodyString;
+        String bodyString = "";
 
         try (final InputStream in = response.getBody()) {
             bodyString = CharStreams.toString(new InputStreamReader(in, Charsets.UTF_8));
+        } catch (IOException e) {
+            // An IOException will be thrown when the body is zero-length (e.g. a 404 response)
+            log.debug("Unable to open response body", e);
         }
 
         final MediaType contentType = response.getHeaders().getContentType();
@@ -73,7 +81,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
                 final Object json = objectMapper.readValue(bodyString, Object.class);
                 bodyString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
             } catch (IOException e) {
-                log.debug("Unable to parse the response as JSON. Printing raw response body string...");
+                log.debug("Unable to parse the response as JSON.", e);
             }
         }
 
@@ -84,6 +92,10 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
         " Headers     :   {} \n" +
         " Body        :   {} \n" +
         "==============================================================================================",
-            traceId, response.getStatusCode(), response.getStatusText(), response.getHeaders(), bodyString);
+            traceId,
+            response.getStatusCode(),
+            response.getStatusText(),
+            response.getHeaders(),
+            bodyString.isEmpty() ? "<no body>" : bodyString);
     }
 }
