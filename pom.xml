@@ -107,7 +107,6 @@
 	</properties>
 
 	<modules>
-		<module>secure-tomcat-image</module>
 		<module>shared-common</module>
 		<module>shared-config</module>
 		<module>shared-db</module>
