@@ -1,5 +1,6 @@
 package tds.shared.spring.configuration;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
@@ -25,6 +26,7 @@ public class WebConfiguration {
     @Bean(name = "integrationObjectMapper")
     public ObjectMapper getIntegrationObjectMapper() {
         return new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .registerModule(new GuavaModule())
             .registerModule(new JodaModule());
     }
