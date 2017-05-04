@@ -34,11 +34,14 @@ public class HttpRequestLoggerInitializerFilter implements Filter
   private boolean             logRequestBodies = false;
   private static final Logger logger           = LoggerFactory.getLogger (HttpRequestLoggerInitializerFilter.class);
 
+  private static String PROGMAN_LOCATOR = "progman.locator";
+
   @Override
   public void init (FilterConfig filterConfig) throws ServletException {
     prefix = filterConfig.getInitParameter ("prefix");
     String strLogRequestBodies = filterConfig.getInitParameter ("LogRequestBodies");
     logRequestBodies = (strLogRequestBodies != null) && (!"false".equalsIgnoreCase (strLogRequestBodies));
+    MDC.put(PROGMAN_LOCATOR, System.getProperty(PROGMAN_LOCATOR));
   }
 
   @Override

@@ -5,6 +5,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class RestTemplateLoggingInterceptor implements ClientHttpRequestInterceptor {
     private static final Logger log = LoggerFactory.getLogger(RestTemplateLoggingInterceptor.class);
     private static final String CONTENT_TYPE_SUBTYPE_JSON = "json";
+    private static final String TRACER_ID_HEADER = "X-B3-TraceId";
     private final ObjectMapper objectMapper;
 
     public RestTemplateLoggingInterceptor(final ObjectMapper objectMapper) {
@@ -42,6 +44,8 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
     private void logRequest(final HttpRequest request, final byte[] body, final UUID traceId) {
         String bodyString = new String(body, Charsets.UTF_8);
         final MediaType contentType = request.getHeaders().getContentType();
+        MDC.put(TRACER_ID_HEADER, traceId.toString());
+        request.getHeaders().add(TRACER_ID_HEADER,  traceId.toString());
 
         if (!bodyString.isEmpty() && contentType.getSubtype().equals(CONTENT_TYPE_SUBTYPE_JSON)) {
             try {
