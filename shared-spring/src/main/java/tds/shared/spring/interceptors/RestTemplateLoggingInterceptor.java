@@ -2,6 +2,7 @@ package tds.shared.spring.interceptors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.io.CharStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,18 +35,26 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
     public ClientHttpResponse intercept(final HttpRequest request,
                                         final byte[] body,
                                         final ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
-        final UUID traceId = UUID.randomUUID();
+
+        // get tracer id that used to associate all rest calls that are a child of this request
+        final String traceId = Optional.fromNullable(MDC.get(TRACER_ID_HEADER)).or(UUID.randomUUID().toString());
         logRequest(request, body, traceId);
-        ClientHttpResponse response = clientHttpRequestExecution.execute(request, body);
+        final ClientHttpResponse response;
+        try {
+            response = clientHttpRequestExecution.execute(request, body);
+        } catch (IOException e) {
+            log.error(String.format("Exception occurred while executing rest request. METHOD: %s URI: %s", request.getMethod(), request.getURI()), e);
+            throw e;
+        }
         logResponse(response, traceId);
         return response;
     }
 
-    private void logRequest(final HttpRequest request, final byte[] body, final UUID traceId) {
+    private void logRequest(final HttpRequest request, final byte[] body, final String traceId) {
         String bodyString = new String(body, Charsets.UTF_8);
         final MediaType contentType = request.getHeaders().getContentType();
-        MDC.put(TRACER_ID_HEADER, traceId.toString());
-        request.getHeaders().add(TRACER_ID_HEADER,  traceId.toString());
+        MDC.put(TRACER_ID_HEADER, traceId);
+        request.getHeaders().add(TRACER_ID_HEADER, traceId);
 
         if (!bodyString.isEmpty() && contentType.getSubtype().equals(CONTENT_TYPE_SUBTYPE_JSON)) {
             try {
@@ -68,7 +77,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
             bodyString.isEmpty() ? "<no body>" : bodyString);
     }
 
-    private void logResponse(final ClientHttpResponse response, final UUID traceId) throws IOException {
+    private void logResponse(final ClientHttpResponse response, final String traceId) {
         String bodyString = "";
 
         try (final InputStream in = response.getBody()) {
@@ -89,17 +98,21 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
             }
         }
 
-        log.debug("\n=========================================* RESPONSE *========================================= \n" +
-        " Trace ID    :   {} \n" +
-        " Status Code :   {} \n" +
-        " Status Text :   {} \n" +
-        " Headers     :   {} \n" +
-        " Body        :   {} \n" +
-        "==============================================================================================",
-            traceId,
-            response.getStatusCode(),
-            response.getStatusText(),
-            response.getHeaders(),
-            bodyString.isEmpty() ? "<no body>" : bodyString);
+        try {
+            log.debug("\n=========================================* RESPONSE *========================================= \n" +
+                    " Trace ID    :   {} \n" +
+                    " Status Code :   {} \n" +
+                    " Status Text :   {} \n" +
+                    " Headers     :   {} \n" +
+                    " Body        :   {} \n" +
+                    "==============================================================================================",
+                traceId,
+                response.getStatusCode(),
+                response.getStatusText(),
+                response.getHeaders(),
+                bodyString.isEmpty() ? "<no body>" : bodyString);
+        } catch (IOException e) {
+            log.warn("Exception occurred while logging rest response.", e);
+        }
     }
 }
