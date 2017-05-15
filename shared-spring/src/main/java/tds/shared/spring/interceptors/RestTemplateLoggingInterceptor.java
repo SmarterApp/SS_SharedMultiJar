@@ -39,14 +39,15 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
         // get tracer id that used to associate all rest calls that are a child of this request
         final String traceId = Optional.fromNullable(MDC.get(TRACER_ID_HEADER)).or(UUID.randomUUID().toString());
         logRequest(request, body, traceId);
+        ClientHttpResponse response;
         try {
-            ClientHttpResponse response = clientHttpRequestExecution.execute(request, body);
-            logResponse(response, traceId);
-            return response;
+            response = clientHttpRequestExecution.execute(request, body);
         } catch (IOException e) {
             log.error(String.format("Exception occurred while executing rest request. METHOD: %s URI: %s", request.getMethod(), request.getURI()), e);
             throw e;
         }
+        logResponse(response, traceId);
+        return response;
     }
 
     private void logRequest(final HttpRequest request, final byte[] body, final String traceId) {
@@ -76,7 +77,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
             bodyString.isEmpty() ? "<no body>" : bodyString);
     }
 
-    private void logResponse(final ClientHttpResponse response, final String traceId) throws IOException {
+    private void logResponse(final ClientHttpResponse response, final String traceId) {
         String bodyString = "";
 
         try (final InputStream in = response.getBody()) {
@@ -97,17 +98,21 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
             }
         }
 
-        log.debug("\n=========================================* RESPONSE *========================================= \n" +
-        " Trace ID    :   {} \n" +
-        " Status Code :   {} \n" +
-        " Status Text :   {} \n" +
-        " Headers     :   {} \n" +
-        " Body        :   {} \n" +
-        "==============================================================================================",
-            traceId,
-            response.getStatusCode(),
-            response.getStatusText(),
-            response.getHeaders(),
-            bodyString.isEmpty() ? "<no body>" : bodyString);
+        try {
+            log.debug("\n=========================================* RESPONSE *========================================= \n" +
+                    " Trace ID    :   {} \n" +
+                    " Status Code :   {} \n" +
+                    " Status Text :   {} \n" +
+                    " Headers     :   {} \n" +
+                    " Body        :   {} \n" +
+                    "==============================================================================================",
+                traceId,
+                response.getStatusCode(),
+                response.getStatusText(),
+                response.getHeaders(),
+                bodyString.isEmpty() ? "<no body>" : bodyString);
+        } catch (IOException e) {
+            log.warn("Exception occurred while logging rest response.", e);
+        }
     }
 }
