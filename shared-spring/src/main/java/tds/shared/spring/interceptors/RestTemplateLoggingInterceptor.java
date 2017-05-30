@@ -37,7 +37,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
                                         final ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
 
         // get tracer id that used to associate all rest calls that are a child of this request
-        final String traceId = Optional.fromNullable(MDC.get(TRACER_ID_HEADER)).or(UUID.randomUUID().toString());
+        final String traceId = Optional.fromNullable(MDC.get(TRACER_ID_HEADER)).or(UUID.randomUUID().toString().replace("-", ""));
         logRequest(request, body, traceId);
         final ClientHttpResponse response;
         try {
