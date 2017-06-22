@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>shared-db-test</artifactId>
 	<name>Support for tests of database-enabled classes</name>
@@ -9,7 +8,7 @@
     <parent>
         <groupId>org.opentestsystem.shared</groupId>
         <artifactId>shared-master</artifactId>
-        <version>1.0.1</version>
+        <version>3.1.1.RELEASE</version>
     </parent>
     
 	<dependencies>
@@ -50,10 +49,26 @@
 			<artifactId>slf4j-log4j12</artifactId>
         </dependency>
 	</dependencies>
-	<build>
 
-	</build>
-	<reporting>
-	
-	</reporting>
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

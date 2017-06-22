@@ -27,6 +27,13 @@
 # Mongo Explorer plugin:
 .idea/mongoSettings.xml
 
+
+.idea/.name
+.idea/compiler.xml
+.idea/encodings.xml
+.idea/misc.xml
+.idea/modules.xml
+
 ## File-based project format:
 *.iws
 
@@ -50,7 +57,7 @@ fabric.properties
 ### Intellij Patch ###
 # Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
 
-# *.iml
+*.iml
 # modules.xml
 
 
