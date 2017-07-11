@@ -23,7 +23,7 @@ import AIR.Common.Utilities.UrlEncoderDecoderUtils;
 // TODO Shiva encryption decryption has not been accomplished yet.
 public class EncryptionHelper
 {
-
+  private IEncryption iEncryption;
   // / <summary>
   // / Encode bytes to BASE64
   // / </summary>
@@ -49,6 +49,14 @@ public class EncryptionHelper
 
   public static String DecryptFromBase64 (String data) {
     return SpringApplicationContext.getBean ("iEncryption", IEncryption.class).unScrambleText (DecodeFromBase64 (data));
+  }
+
+  public static String EncryptToBase64 (String data, IEncryption encryption) {
+    return EncodeToBase64 (encryption.scrambleText (data));
+  }
+
+  public static String DecryptFromBase64 (String data, IEncryption encryption) {
+    return encryption.unScrambleText (DecodeFromBase64 (data));
   }
 
 }
