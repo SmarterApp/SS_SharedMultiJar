@@ -39,7 +39,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
     private static final String CONTENT_TYPE_SUBTYPE_JSON = "json";
     private static final String TRACER_ID_HEADER = "X-B3-TraceId";
     private final ObjectMapper objectMapper;
-    private boolean prettyPrintJson;
+    private final boolean prettyPrintJson;
 
     public RestTemplateLoggingInterceptor(final ObjectMapper objectMapper, final boolean prettyPrintJson) {
         this.objectMapper = objectMapper;
