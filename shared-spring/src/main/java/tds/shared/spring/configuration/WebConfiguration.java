@@ -24,6 +24,7 @@ import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import tds.shared.spring.interceptors.RestTemplateLoggingInterceptor;
@@ -55,6 +56,7 @@ public class WebConfiguration {
         final RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
         final List<HttpMessageConverter<?>> converters = new ArrayList<>();
         converters.add(converter);
+        converters.add(new ResourceHttpMessageConverter());
         restTemplate.setMessageConverters(converters);
 
         // Request/Response RestTemplate Logging
