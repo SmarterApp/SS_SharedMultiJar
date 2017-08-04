@@ -12,7 +12,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<file.encoding>UTF-8</file.encoding>
-		<java.jdk>1.8</java.jdk>
+		<java.jdk>1.7</java.jdk>
 
 		<!-- Logging defaults (override by setting system properties) -->
 		<log4j.xml.RootLogPath>C:/log/proctor</log4j.xml.RootLogPath>
@@ -21,9 +21,8 @@
 		<log4j.xml.RootLogLevel>info</log4j.xml.RootLogLevel>
 
 		<!-- Spring -->
-
-		<spring.version>4.3.9.RELEASE</spring.version>
-		<spring-webflow.version>2.4.5.RELEASE</spring-webflow.version>
+		<spring.version>3.2.1.RELEASE</spring.version>
+		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
 		<spring-mock.version>2.0.8</spring-mock.version>
 		<spring-security-oauth.version>2.0.3.RELEASE</spring-security-oauth.version>
 		<mongo-java-driver.version>2.9.2</mongo-java-driver.version>
@@ -96,7 +95,7 @@
 		<json-path.version>0.8.1</json-path.version>
 		<jsp-api.version>2.2.1-b03</jsp-api.version>
 		<jstl.version>1.2</jstl.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.11</junit.version>
 		<log4j.version>1.2.17</log4j.version>
 		<mockito.version>1.9.5</mockito.version>
 		<myfaces.version>2.1.15</myfaces.version>
@@ -245,18 +244,6 @@
 			<!-- end JDOM for xml processing -->
 
 			<!-- Spring -->
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-core</artifactId>
-				<version>${spring.version}</version>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>

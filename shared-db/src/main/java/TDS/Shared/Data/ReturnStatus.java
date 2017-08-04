@@ -181,6 +181,7 @@ public class ReturnStatus
         try {
           returnStatus._context = result.<String> get ("context");
         } catch (ClassCastException e) {
+          System.out.println (result.get ("context"));
           if (result.get ("context") != null && result.get ("context").equals ("0")) {
             returnStatus._context = "";
           }
