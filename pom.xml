@@ -28,7 +28,6 @@
 
 		<!-- Spring -->
 
-		<spring-mock.version>2.0.8</spring-mock.version>
 		<spring-security-core.version>3.2.4.RELEASE</spring-security-core.version>
 		<spring-security-oauth.version>2.0.3.RELEASE</spring-security-oauth.version>
 		<mongo-java-driver.version>2.9.2</mongo-java-driver.version>
@@ -266,17 +265,6 @@
 				<artifactId>spring-web</artifactId>
 				<version>${spring.version}</version>
 				<scope>compile</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-mock</artifactId>
-				<version>${spring-mock.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
