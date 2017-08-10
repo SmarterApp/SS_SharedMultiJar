@@ -18,7 +18,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<file.encoding>UTF-8</file.encoding>
-		<java.jdk>1.8</java.jdk>
+		<java.jdk>1.7</java.jdk>
 
 		<!-- Logging defaults (override by setting system properties) -->
 		<log4j.xml.RootLogPath>C:/log/proctor</log4j.xml.RootLogPath>

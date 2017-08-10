@@ -39,9 +39,11 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
     private static final String CONTENT_TYPE_SUBTYPE_JSON = "json";
     private static final String TRACER_ID_HEADER = "X-B3-TraceId";
     private final ObjectMapper objectMapper;
+    private final boolean prettyPrintJson;
 
-    public RestTemplateLoggingInterceptor(final ObjectMapper objectMapper) {
+    public RestTemplateLoggingInterceptor(final ObjectMapper objectMapper, final boolean prettyPrintJson) {
         this.objectMapper = objectMapper;
+        this.prettyPrintJson = prettyPrintJson;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
         MDC.put(TRACER_ID_HEADER, traceId);
         request.getHeaders().add(TRACER_ID_HEADER, traceId);
 
-        if (!bodyString.isEmpty() && contentType.getSubtype().equals(CONTENT_TYPE_SUBTYPE_JSON)) {
+        if (!bodyString.isEmpty() && prettyPrintJson && contentType.getSubtype().equals(CONTENT_TYPE_SUBTYPE_JSON)) {
             try {
                 final Object json = objectMapper.readValue(bodyString, Object.class);
                 bodyString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
@@ -92,22 +94,25 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
 
     private void logResponse(final ClientHttpResponse response, final String traceId) {
         String bodyString = "";
-
-        try (final InputStream in = response.getBody()) {
-            bodyString = CharStreams.toString(new InputStreamReader(in, Charsets.UTF_8));
-        } catch (IOException e) {
-            // An IOException will be thrown when the body is zero-length (e.g. a 404 response)
-            log.debug("Unable to open response body", e);
-        }
-
         final MediaType contentType = response.getHeaders().getContentType();
 
-        if (!bodyString.isEmpty() && contentType.getSubtype().equals(CONTENT_TYPE_SUBTYPE_JSON)) {
-            try {
-                final Object json = objectMapper.readValue(bodyString, Object.class);
-                bodyString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+        if (contentType != null && contentType.equals(MediaType.APPLICATION_OCTET_STREAM)) {
+            bodyString = "<BINARY>";
+        } else {
+            try (final InputStream in = response.getBody()) {
+                bodyString = CharStreams.toString(new InputStreamReader(in, Charsets.UTF_8));
             } catch (IOException e) {
-                log.debug("Unable to parse the response as JSON.", e);
+                // An IOException will be thrown when the body is zero-length (e.g. a 404 response)
+                log.debug("Unable to open response body", e);
+            }
+
+            if (!bodyString.isEmpty() && prettyPrintJson && contentType.getSubtype().equals(CONTENT_TYPE_SUBTYPE_JSON)) {
+                try {
+                    final Object json = objectMapper.readValue(bodyString, Object.class);
+                    bodyString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+                } catch (IOException e) {
+                    log.debug("Unable to parse the response as JSON.", e);
+                }
             }
         }
 

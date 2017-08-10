@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -38,6 +39,9 @@ import java.util.List;
  */
 @Configuration
 public class WebConfiguration {
+    @Value("${logging.rest.template.pretty.print:false}")
+    private boolean prettyPrintJson;
+
     @Bean(name = "integrationObjectMapper")
     @Primary
     public ObjectMapper getIntegrationObjectMapper() {
@@ -60,7 +64,7 @@ public class WebConfiguration {
         restTemplate.setMessageConverters(converters);
 
         // Request/Response RestTemplate Logging
-        final ClientHttpRequestInterceptor loggingInterceptor = new RestTemplateLoggingInterceptor(getIntegrationObjectMapper());
+        final ClientHttpRequestInterceptor loggingInterceptor = new RestTemplateLoggingInterceptor(getIntegrationObjectMapper(), prettyPrintJson);
         restTemplate.setInterceptors(Arrays.asList(loggingInterceptor));
 
         return restTemplate;
