@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.opentestsystem.shared</groupId>
 		<artifactId>shared-build-parent</artifactId>
-		<version>4.0.0.RELEASE</version>
+		<version>4.0.3</version>
 	</parent>
 
 	<properties>
@@ -18,7 +18,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<file.encoding>UTF-8</file.encoding>
-		<java.jdk>1.7</java.jdk>
+		<java.jdk>1.8</java.jdk>
 
 		<!-- Logging defaults (override by setting system properties) -->
 		<log4j.xml.RootLogPath>C:/log/proctor</log4j.xml.RootLogPath>
@@ -27,11 +27,8 @@
 		<log4j.xml.RootLogLevel>info</log4j.xml.RootLogLevel>
 
 		<!-- Spring -->
-
-		<spring-security-core.version>3.2.4.RELEASE</spring-security-core.version>
-		<spring-security-oauth.version>2.0.3.RELEASE</spring-security-oauth.version>
 		<mongo-java-driver.version>2.9.2</mongo-java-driver.version>
-		<spring-data-mongodb.version>1.2.0.RELEASE</spring-data-mongodb.version>
+
 		<!-- Maven Plugins -->
 		<buildnumber-maven-plugin.version>1.1</buildnumber-maven-plugin.version>
 		<exec-maven-plugin.version>1.2.1</exec-maven-plugin.version>
@@ -247,110 +244,6 @@
 			</dependency>
 			<!-- end JDOM for xml processing -->
 
-			<!-- Spring -->
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc</artifactId>
-				<version>${spring.version}</version>
-				<scope>compile</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-web</artifactId>
-				<version>${spring.version}</version>
-				<scope>compile</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-test</artifactId>
-				<version>${spring.version}</version>
-				<scope>test</scope>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-orm</artifactId>
-				<version>${spring.version}</version>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-tx</artifactId>
-				<version>${spring.version}</version>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-jdbc</artifactId>
-				<version>${spring.version}</version>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-core</artifactId>
-				<version>${spring-security-core.version}</version>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework.security.oauth</groupId>
-				<artifactId>spring-security-oauth2</artifactId>
-				<version>${spring-security-oauth.version}</version>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			
 			<!-- AspectJ -->
 			<dependency>
 				<groupId>org.aspectj</groupId>
@@ -564,10 +457,6 @@
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
 					</exclusion>
-<!-- 					<exclusion> -->
-<!-- 						<groupId>org.eclipse.jetty</groupId> -->
-<!-- 						<artifactId>jetty-websocket</artifactId> -->
-<!-- 					</exclusion> -->
 					<exclusion>
 						<groupId>xerces</groupId>
 						<artifactId>xercesImpl</artifactId>
