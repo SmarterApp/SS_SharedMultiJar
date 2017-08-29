@@ -4,7 +4,7 @@
 	<groupId>org.opentestsystem.shared</groupId>
 	<artifactId>shared-master</artifactId>
 	<name>Master POM for open test system shared modules</name>
-	<version>4.0.3-SNAPSHOT</version>
+	<version>4.0.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<parent>
@@ -143,97 +143,97 @@
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-common</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-config</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-db</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-db-test</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test-jetty-container</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-security</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test-api</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-threading</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-tr-api</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-web</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-xml</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-json</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-log4j</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-logging</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-spring</artifactId>
-				<version>4.0.3-SNAPSHOT</version>
+				<version>4.0.4-SNAPSHOT</version>
 			</dependency>
 
 			<!-- start JDOM for xml processing -->
