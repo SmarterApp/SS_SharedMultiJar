@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -24,6 +25,7 @@ import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import tds.shared.spring.interceptors.RestTemplateLoggingInterceptor;
@@ -37,6 +39,9 @@ import java.util.List;
  */
 @Configuration
 public class WebConfiguration {
+    @Value("${logging.rest.template.pretty.print:false}")
+    private boolean prettyPrintJson;
+
     @Bean(name = "integrationObjectMapper")
     @Primary
     public ObjectMapper getIntegrationObjectMapper() {
@@ -55,10 +60,11 @@ public class WebConfiguration {
         final RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
         final List<HttpMessageConverter<?>> converters = new ArrayList<>();
         converters.add(converter);
+        converters.add(new ResourceHttpMessageConverter());
         restTemplate.setMessageConverters(converters);
 
         // Request/Response RestTemplate Logging
-        final ClientHttpRequestInterceptor loggingInterceptor = new RestTemplateLoggingInterceptor(getIntegrationObjectMapper());
+        final ClientHttpRequestInterceptor loggingInterceptor = new RestTemplateLoggingInterceptor(getIntegrationObjectMapper(), prettyPrintJson);
         restTemplate.setInterceptors(Arrays.asList(loggingInterceptor));
 
         return restTemplate;

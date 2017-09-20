@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.opentestsystem.shared</groupId>
 		<artifactId>shared-master</artifactId>
-		<version>3.1.1.RELEASE</version>
+		<version>4.0.6.RELEASE</version>
 	</parent>
 
 	<dependencies>
@@ -54,11 +54,6 @@
 			<groupId>org.springframework.webflow</groupId>
 			<artifactId>spring-faces</artifactId>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opentestsystem.shared</groupId>
