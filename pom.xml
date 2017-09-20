@@ -4,15 +4,21 @@
 	<groupId>org.opentestsystem.shared</groupId>
 	<artifactId>shared-master</artifactId>
 	<name>Master POM for open test system shared modules</name>
-	<version>3.1.1.RELEASE</version>
+	<version>4.0.6.RELEASE</version>
 	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>org.opentestsystem.shared</groupId>
+		<artifactId>shared-build-parent</artifactId>
+		<version>4.0.7.RELEASE</version>
+	</parent>
 
 	<properties>
 		<!-- project level properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<file.encoding>UTF-8</file.encoding>
-		<java.jdk>1.7</java.jdk>
+		<java.jdk>1.8</java.jdk>
 
 		<!-- Logging defaults (override by setting system properties) -->
 		<log4j.xml.RootLogPath>C:/log/proctor</log4j.xml.RootLogPath>
@@ -21,12 +27,8 @@
 		<log4j.xml.RootLogLevel>info</log4j.xml.RootLogLevel>
 
 		<!-- Spring -->
-		<spring.version>3.2.1.RELEASE</spring.version>
-		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
-		<spring-mock.version>2.0.8</spring-mock.version>
-		<spring-security-oauth.version>2.0.3.RELEASE</spring-security-oauth.version>
 		<mongo-java-driver.version>2.9.2</mongo-java-driver.version>
-		<spring-data-mongodb.version>1.2.0.RELEASE</spring-data-mongodb.version>
+
 		<!-- Maven Plugins -->
 		<buildnumber-maven-plugin.version>1.1</buildnumber-maven-plugin.version>
 		<exec-maven-plugin.version>1.2.1</exec-maven-plugin.version>
@@ -81,8 +83,8 @@
 		<htmlunit.version>2.14</htmlunit.version>
 		<httpclient.version>4.3.1</httpclient.version>
 		<httpcore.version>4.3.1</httpcore.version>
-		<jackson.version>2.2.3</jackson.version>
-		<jackson-datatype-joda.version>2.1.2</jackson-datatype-joda.version>
+		<jackson.version>2.8.5</jackson.version>
+		<jackson-datatype-joda.version>2.8.5</jackson-datatype-joda.version>
 		<javax-el.version>2.2</javax-el.version>
 		<javax-faces.version>2.1</javax-faces.version>
 		<javax-inject.version>1</javax-inject.version>
@@ -95,7 +97,6 @@
 		<json-path.version>0.8.1</json-path.version>
 		<jsp-api.version>2.2.1-b03</jsp-api.version>
 		<jstl.version>1.2</jstl.version>
-		<junit.version>4.11</junit.version>
 		<log4j.version>1.2.17</log4j.version>
 		<mockito.version>1.9.5</mockito.version>
 		<myfaces.version>2.1.15</myfaces.version>
@@ -142,97 +143,97 @@
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-common</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-config</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-db</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-db-test</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test-jetty-container</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-security</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-test-api</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-threading</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-tr-api</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-web</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-xml</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-json</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-log4j</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-logging</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.opentestsystem.shared</groupId>
 				<artifactId>shared-spring</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>4.0.6.RELEASE</version>
 			</dependency>
 
 			<!-- start JDOM for xml processing -->
@@ -243,133 +244,6 @@
 			</dependency>
 			<!-- end JDOM for xml processing -->
 
-			<!-- Spring -->
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context</artifactId>
-				<version>${spring.version}</version>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc</artifactId>
-				<version>${spring.version}</version>
-				<scope>compile</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-web</artifactId>
-				<version>${spring.version}</version>
-				<scope>compile</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-mock</artifactId>
-				<version>${spring-mock.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.webflow</groupId>
-				<artifactId>spring-faces</artifactId>
-				<version>${spring-webflow.version}</version>
-				<scope>compile</scope>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-test</artifactId>
-				<version>${spring.version}</version>
-				<scope>test</scope>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-orm</artifactId>
-				<version>${spring.version}</version>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-tx</artifactId>
-				<version>${spring.version}</version>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-jdbc</artifactId>
-				<version>${spring.version}</version>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-		    <dependency>
-				<groupId>org.springframework.security.oauth</groupId>
-				<artifactId>spring-security-oauth2</artifactId>
-				<version>${spring-security-oauth.version}</version>
-				<exclusions>
-					<!-- Exclude Commons Logging in favor of SLF4j -->
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			
 			<!-- AspectJ -->
 			<dependency>
 				<groupId>org.aspectj</groupId>
@@ -541,11 +415,6 @@
 
 
 			<!-- Test -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-			</dependency>
 
 			<dependency>
 				<groupId>org.mockito</groupId>
@@ -588,10 +457,6 @@
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
 					</exclusion>
-<!-- 					<exclusion> -->
-<!-- 						<groupId>org.eclipse.jetty</groupId> -->
-<!-- 						<artifactId>jetty-websocket</artifactId> -->
-<!-- 					</exclusion> -->
 					<exclusion>
 						<groupId>xerces</groupId>
 						<artifactId>xercesImpl</artifactId>
@@ -844,7 +709,7 @@
 		<connection>scm:git:https://github.com/SmarterApp/SS_SharedMultiJar.git</connection>
 		<developerConnection>scm:git:git://github.com/SmarterApp/SS_SharedMultiJar.git</developerConnection>
 		<url>https://github.com/SmarterApp/SS_SharedMultiJar</url>
-		<tag>3.1.1.RELEASE</tag>
+		<tag>4.0.6.RELEASE</tag>
 	</scm>
 
 	<distributionManagement>
